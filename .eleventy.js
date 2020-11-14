@@ -71,8 +71,8 @@ module.exports = function(eleventyConfig) {
 
   /* Markdown Overrides */
   let markdownLibrary = markdownIt({
+    typographer: true,
     html: true,
-    breaks: true,
     linkify: true
   }).use(markdownItAnchor, {
     permalink: true,

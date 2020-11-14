@@ -1,9 +1,9 @@
 {
-  "title": "To Love and to Learn",
+  "title": "To Love and to Learn (Gil Tayar's Blog)",
   "url": "https://gils-blog.tayar.org/",
-  "description": "JavaScript, Testing, ES Modules, and other ruminatios about software development  ",
+  "description": "JavaScript, Testing, ES Modules, and other ruminations on software development  ",
   "feed": {
-    "subtitle": "JavaScript, Testing, ES Modules, and other ruminatios about life",
+    "subtitle": "JavaScript, Testing, ES Modules, and other ruminations on software development",
     "filename": "feed.xml",
     "path": "/feed/feed.xml",
     "id": "https://gils-blog.tayar.org/"

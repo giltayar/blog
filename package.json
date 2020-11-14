@@ -5,9 +5,10 @@
   "scripts": {
     "build": "eleventy",
     "watch": "eleventy --watch",
-    "serve": "eleventy --serve",
     "start": "eleventy --serve",
-    "debug": "DEBUG=* eleventy"
+    "debug": "DEBUG=* eleventy",
+    "deploy:draft": "netlify deploy",
+    "deploy": "netlify deploy --prod"
   },
   "repository": {
     "type": "git",
@@ -31,5 +32,8 @@
     "luxon": "^1.21.3",
     "markdown-it": "^8.4.2",
     "markdown-it-anchor": "^5.2.5"
+  },
+  "dependencies": {
+    "netlify-cli": "^2.68.5"
   }
 }
