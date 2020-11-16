@@ -10,7 +10,7 @@ layout: layouts/post.njk
 ---
 The [new Apple Macs](https://www.apple.com/apple-events/november-2020/) are a wonder.
 As the now famous [AnandTech graph](https://www.anandtech.com/show/16226/apple-silicon-m1-a14-deep-dive/4)
-shows us, Apple's ARM processors have been distrupting Intel,
+shows us, Apple's ARM processors have been disrupting Intel,
 and have now finally surpassed them not just in performance-per-watt,
 but now also in _absolute_ performance:
 
