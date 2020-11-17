@@ -108,8 +108,9 @@ ARM instruction set and run natively on the new Macs.
 > Note: at the time I'm writing this post, it seems that
 [Docker doesn't run](https://github.com/docker/for-mac/issues/4733) _at all_ on the new Macs. But
 given that a program like Docker is a complex beast that touches the internals of everything,
-that is to be expected, and will probably change in the coming months. So let's assume for now
-that Docker _does_ run.
+that is to be expected,
+and [will probably change in the coming months](https://www.docker.com/blog/apple-silicon-m1-chips-and-docker/).
+So let's assume for now that Docker _does_ run.
 
 Now that I've explained how Rosetta works to ensure backward compatibility, let's understand why
 it will work very VERY slowly. To do that, we need to understand three things about Docker:
@@ -204,6 +205,7 @@ those shiny ARM Macs that everyone has.
 * [Docker multi-CPU architecture](https://docs.docker.com/docker-for-mac/multi-arch/)
 * [The new Apple Macs](https://www.apple.com/apple-events/november-2020/)
 * [Blog post on docker on ARM Macs](https://chriswarrick.com/blog/2020/06/22/what-an-arm-mac-means-for-developers-and-windows-users/)
+* [Docker's statement on making Docker work on M1](https://www.docker.com/blog/apple-silicon-m1-chips-and-docker/)
 
 ## Thanks
 
