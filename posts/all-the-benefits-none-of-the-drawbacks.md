@@ -254,7 +254,48 @@ Let's now see it in Visual Studio Code:
 
 Wow! Types are working! I can now see my errors. But that isn't enough. We want typechecking!
 
-## Adding typechecking to our tests
+## Implicit and explicit typing
+
+Let's define a variable that accepts the value of the call to `add`:
+
+```js
+const addition = add(7, 8)
+```
+
+What will be the type of this variable? TypeScript does it's thing, and the type will
+be `addition`, because TypeScript knows how to automatically infer the type of the variable.
+To prove that it does, let's hover above the new variable:
+
+![implicit typing of variable](img/jsdoc-implicit-typing-of-variable.png)
+
+This has nothing to do with JSDoc: it's TypeScript implicitly typing the variable to the correct
+type. But what if we wanted the type to be explicit? What if we wanted the equivalent of this
+TypeScript code?
+
+```ts
+const addition: number = add(7, 8)
+```
+
+We still can. The equivalent JSDoc is this:
+
+```js
+/**@type {number} */
+const addition = add(7, 8)
+```
+
+Use @type to type the variable immediately after that one. You can even type an expression, thus:
+
+```js
+const anotherAddition = /**@type {number} */(add(7, 8))
+```
+
+Note that the expression MUST be surrounded by parentheses.
+
+And, yes, this is starting to become unwieldy and ugly. Fortunately, we don't need to use `@type`
+a lot in our code, so this ugliness doesn't appear a lot. But be warned! It _does_ appear,
+and it's not pretty. Life is full of compromises.
+
+## Running typechecking as a test
 
 To add real typechecking, one that will fail the build, and not just show up in Visual Studio Code,
 we need TypeScript in our package. Let's do that:
@@ -287,16 +328,324 @@ A few comments on the options we gave to TypeScript:
 
 ## Configuring TypeScript options correctly
 
-## Exporting `.d.ts` files
+If we want to be serious about TypeScript, we need to configure it like the Pros. Let's do that,
+by adding a `tsconfig.json` to our project root. We'll build this file slowly, understanding
+each step:
 
-## Using other libraries
+```json
+{
+  "include": ["src/**/*.js", "src/**/*.d.ts"],
+  "exclude": ["node_modules"]
+}
+```
 
-* Libraries with TS support
-* Libraries that need `@types/...`
-* Libraries that need a `declare module...`
+First, we define which files we want to type check, and which we don't. This is pretty
+self-explanatory, and you may need to change this to conform to where your JS files are, but
+notice that we're adding `*.d.ts` files. We'll be using this later. Let's just ignore this for now.
+And, yes, you do need to tell TypeScript to ignore `node_modules`, because otherwise it won't and
+you will get i) long typechecking times, and ii) lots of errors in packages you don't care about.
+
+Let's continue:
+
+```json
+{
+  "compilerOptions": {
+    "lib": ["es2020"],
+    "moduleResolution": "node",
+    "module": "CommonJS",
+  },
+  "include": ["src/**/*.js", "src/**/*.d.ts"],
+  "exclude": ["node_modules"]
+}
+```
+
+These new options defines the source code that it will get. We're telling it that it's going
+to use the latest JavaScript defitions, and that we're using CommonJS.
+If you're using ESM, use `esnext`.
+
+Let's continue with the options that allow us to use JS files:
+
+```json
+{
+  "compilerOptions": {
+    "...": "...",
+    "allowJs": true,
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "noEmit": true.
+  },
+  "...": "..."
+}
+```
+
+* `allowJs` allows JS files to be typeChecked
+* `checkJs` tells TypeScript to check _all_ JavaScript files, and not just those with `//@ts-check`
+* `resolveJsonModule` tells Typescript that `require`-ing `.json` files is OK. It will even generate
+  a type for the JSON in the file, so it will be typechecked correctly. Because we're using
+  JavaScript, and `require`-ing JSON in JavaScript is fine, we turn this on.
+* `noEmit` tells TypeScript not to emit transpiled files, which we don't really want because
+  we already have our JavaScript files
+
+Last, but not least, we have our regular TypeScript configurations. Let's go all in, and use the
+strictest option, which tells TypeScript to go all in and do the strictest checks:
+
+```json
+{
+  "compilerOptions": {
+    "...": "...",
+    "strict": true
+  },
+  "...": "..."
+}
+```
+
+If you want less strict options, or any other TypeScript configuration, feel free to add them
+here.
+
+This produces our final `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "lib": ["es2020", "DOM"],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true
+  },
+  "include": ["src/**/*.js"],
+  "exclude": ["node_modules"]
+}
+```
+
+Now we can have TypeScript be part of our tests by adding it to our `scripts` in `package.json`:
+
+```json
+{
+  "scripts": {
+    "test": "... && tsc"
+  }
+}
+```
+
+Now, when we run `npm test`, Typescript (`tsc`) will run, look at our JSDoc typings,
+and typecheck all our JS files.
+
+We've got TypeScript, but without the transpilation.
+
+## Typedefs, classes, and importing types
+
+Sure, but how much of TypeScript do we have? Do we have `interface Foo {}`? `type Foo = ...`?
+`class`? We do! We'll get to `interface` later, but let's start with `type Foo = ...`.
+
+We'll define a function, `breakName`, that breaks a full name to the "first name" and "last name".
+Please don't use this code in production, as it's an extremely naïve implementation:
+
+```js
+function breakName(name) {
+  const [first, ...rest] = name.split(' ')
+
+  return {firstName: first, lastName: rest.join(' ')}
+}
+```
+
+Since I'm using Visual Studio Code, and you write the above code, I'll get a squiggly red line
+on the `name` parameter:
+
+![error when untyped parameter](img/jsdoc-error-on-unknown-type-in-breakname.png)
+
+This is because I use `strict: true` in the `tsconfig.json`, and that tells TypeScript that
+implicitly typing variables to `any` is not allowed, and thus forces you to define all function
+parameters. So let's fix that, and as long as we're there, let's define the return value too:
+
+```js
+/**
+ * @param {string} name
+ * @returns {{firstName: string, lastName: string}}
+ */
+function breakName(name) {
+  const [first, ...rest] = name.split(' ')
+
+  return {firstName: first, lastName: rest.join(' ')}
+}
+```
+
+We defined the `{firstName: string, lastName: string}` as a return value. As I said:
+we have the full power of Typescript at your disposal. Notice the double curly braces `{{...}}`
+when defininig the return type. The outer curly braces are needed by JSDoc, who's syntax
+forces us to surround all types with curly braces, and the inner curly braces are for the TypeScript
+type definition for an object.
+
+Let's make it nicer, to make that return value a `type`? We can do that, using
+the `@typedef` JSDoc:
+
+```js
+/**
+ *
+ * @typedef {{firstName: string, lastName: string}} BrokenName
+ */
+```
+
+This is equivalent to the TypeScript code:
+
+```ts
+type BrokenName = {firstName: string, lastName: string}
+```
+
+To use it in the function, we change it a bit:
+
+```js
+/**
+ * @param {string} name
+ * @returns {BrokenName}
+ */
+function breakName(name) {
+  const [first, ...rest] = name.split(' ')
+
+  return {firstName: first, lastName: rest.join(' ')}
+}
+```
+
+And to use it, we just:
+
+```js
+const brokenName = breakName('Gil Tayar')
+console.log(brokenName) // => { firstName: 'Gil', lastName: 'Tayar' }
+```
+
+## Importing types from other modules
+
+What if we wanted to do explicit typings in the above example? As above, we can just do this:
+
+```js
+/**@type {BrokenName} */
+const brokenName = breakName('Gil Tayar')
+```
+
+But what happens if `breakName` and `BrokenName` come from another module? In TypeScript we can use:
+
+```ts
+import {BrokenName} from './names'
+
+const brokenName: BrokenName = breakName('Gil Tayar')
+```
+
+But this is not possible in JavaScript, because JavaScript modules don't export types. So how
+do we do the same in JSDoc? How do we use a type (or interface or class) that was defined in another
+module? The answer is "use `import(type)`":
+
+```js
+/**@type {import('./names').BrokenName} */
+const brokenName = breakName('Gil Tayar')
+```
+
+The `import` in JSDoc allows you to import "types stuff" from other modules and packages. And
+if you get tired of writing `import('./names')` everywhere, you can always write:
+
+```js
+/**@typedef {import('./names').BrokenName} BrokenName*/
+```
+
+to alias it in your other module.
+
+## Using types from other NPM packages
+
+Would this `import` work with other libraries? Definitely! Let's talk about using types from
+other NPM package. We have three different types of libraries:
+
+* Libraries that have type information, especially libraries that were written in TypeScript
+* Libraries that have external type information from a `@types/...` package
+* Libraries that don't have type information
+
+Let's talk about each one, and how to use each.
+
+## Using types from libraries that have type information
+
+This one's easy: just `npm install` the package and use it. If it has type information,
+TypeScript will find it, don't worry. Just use the stuff that are exported, and it will have
+type information in it. Let's take an example:
+
+```js
+const slugify = require('@sindresorhus/slugify')
+
+console.log(slugify('i ❤️ slugs')) // => i-slugs
+```
+
+We can even use the types that the library exports:
+
+```js
+/**@type {import('@sindresorhus/slugify').Options} */
+const slugifyOptions = {separator: '_'}
+
+console.log(slugify('i ❤️ slugs', slugifyOptions)) // => i_slugs
+```
+
+And if there's a typechecking error, TypeScript will fail:
+
+```sh
+src/jsdoc-typing.js:39:23 - error TS2345: Argument of type '{ badOption: boolean; }' is not assignable to parameter of type 'Options'.
+  Object literal may only specify known properties, and 'badOption' does not exist in type 'Options'.
+
+39 slugify('something', {badOption: true})
+                         ~~~~~~~~~~~~~~~
+```
+
+It works! We can use any TypeScript compatible library and use it and get the same typechecking
+that TypeScript programs use.
+
+## Using types from libraries that have external type information from a `@types/...` package
+
+Let's try Lodash:
+
+```js
+const {map} = require('lodash')
+```
+
+If we typecheck this, we get:
+
+```sh
+src/jsdoc-typing.js:5:23 - error TS7016: Could not find a declaration file for module 'lodash'. '/Users/giltayar/code/jsdoc-typing/node_modules/lodash/lodash.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/lodash` if it exists or add a new declaration (.d.ts) file containing `declare module 'lodash';`
+
+5 const {map} = require('lodash')
+```
+
+Weird error. It says (if I may interpret), that it couldn't find type information for `lodash`.
+And it won't continue without types, it doesn't want to continue. What can we do?
+
+Theoretically, we can write the type declarations ourselves, but that's a lot of work, and we'll
+see how to do it below. But another option is to use an existing, community-owned, database of
+type definitions for lots of NPM packages. Let's see if Lodash has type definitions in this
+database. To find out, just add a package that has these type definitions:
+
+```sh
+npm install --save-dev @types/lodash
+```
+
+It works! If a package has type information that is community-owned, it is probably in
+`@types/<package-name>`, and if you install it, you will get typechecking on that library.
+I've found that most of the type definitions in `@types/...` are of high quality. But not all
+of them... Just remember that those type definitions are used in the same way by the TypeScript
+community itself.
+
+Now if we typecheck the file, we find we have type definitions for the `map` function we imported.
+Yay!
+
+### Using types from libraries that don't have type information
 
 ## Advanced Typescript
 
+* `@template@`, `@class`
+
 ## Using a bit of TypeScript typings
+
+* Using real Typescript in `.d.ts` files
+
+## Exporting `.d.ts` files
+
+* Exporting type information with the package
 
 ## Summary
