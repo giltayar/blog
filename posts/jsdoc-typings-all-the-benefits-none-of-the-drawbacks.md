@@ -821,9 +821,9 @@ otherwise the `@type` won't know what expression is to be cast.
 > This is the ugliest part of JSDoc, and I truly wish there was a nicer way of typecasting, but
   there isn't any unfortunately. It's the only place in JSDoc land that I really dislike.
 
-### Templates
+### Generics
 
-Now for the craziest thing in JSDoc: you can even do templates. Let's go wild. Let's write
+Now for the craziest thing in JSDoc: you can even do generics. Let's go wild. Let's write
 a function, `mapValue`, that receives an object and a map function, and returns an object
 where the keys are the same, but the values are mapped:
 
@@ -833,7 +833,7 @@ function mapValues(object, mapFunction) {
 }
 ```
 
-Nice and simple. Let's add types, but without templates, using the `any` type:
+Nice and simple. Let's add types, but without generics, using the `any` type:
 
 ```js
 /**
@@ -886,9 +886,9 @@ function mapValues(object, mapFunction) {
 }
 ```
 
-This is the equivalent to the above TypeScript template code: three template variables
+This is the equivalent to the above TypeScript generic code: three generic variables
 (`K`, `T`, and `W`), where `K` also `extends string|number|symbol`, and the parameters
-are defined according to those template parameters. And now, if we use the function incorrectly...
+are defined according to those generic parameters. And now, if we use the function incorrectly...
 
 ```js
 const result = mapValue({a: 4}, x => x + 1)
