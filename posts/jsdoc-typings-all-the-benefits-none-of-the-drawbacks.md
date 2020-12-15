@@ -1,89 +1,102 @@
 ---
 title: "JSDoc typings: all the benefits of TypeScript, with none of the drawbacks"
-description: How you can use JSDoc typings to get all the benefits of TypeScript, without needing to transpile to TypeScript
-date: 2020-11-27
+description: How you can use JSDoc typings to get all the benefits of TypeScript, without any transpilation
+date: 2020-12-15
 tags:
   - TypeScript
   - JavaScript
 layout: layouts/post.njk
 ---
 <!-- markdownlint-disable MD029 -->
-TypeScript. For me, it's a love-hate relationship.
+
+(Hey, if you want to come work for me at Roundforest, and try out JSDoc typing, feel free to
+find me on [LinkedIn](https://www.linkedin.com/in/giltayar/) or on Twitter (@giltayar))
+
+TypeScript! For me, it's a love-hate relationship.
 
 I started my developer life in statically typed languages
 (well, if we ignore Basic, which is dynamically typed): C, C++, and Java.
 Then somewhere around 2010, I had the good fortune to start working in Python.
 And I saw the light! I was liberated! Suddenly all those Java and C++ design sessions, where
-we fretted and worried and analyzed our class hierarchy to death. We split hairs about
-this design or that design, instead of just, well, working.
+we fretted and worried and analyzed our class hierarchy to death, disappeared.
+I suddenly saw them for what they were: hair splitting and yak shaving about
+this design or that design, instead of just, well, working. And that yak shaving also
+usually generated tons of abstractions, that half a year later, when reading the code, were
+all but incomprehensible.
 
-And then you come to Python, and all those discussions just end. You just work. And it's not
-that the design doesn't happen, but somehow, once you stop talking about class hierarchy,
-you start dealing with the **data** flow, dealing with what data you have in the system,
-and how it changes over time, and what the algorithms are that change it. And because
+And then I started programming in Python, and all those discussions just end.
+You just work. And it's not that the design doesn't happen, but somehow,
+once you stop talking about class hierarchy, you start dealing with the **data** flow,
+dealing with what data you have in the system, and how it changes over time,
+and what the algorithms are that change it. And because
 you're dealing with _data_, and not trying to abstract it away, then the design becomes
 simpler. Much easier to reason and deal with. And much less hair splitting. And when
 disagreement happens, it was on a much more practical level.
 
-The disappearance of types was a good thing for my profressional career. And it continued
-when I started working in JavaScript. One of the more interesting benefits of dynamic typing
-is that I found myself writing more tests than I usually write. This was _because_ dynamic
-typing doesn't give the safety net that static typing does. So you write more tests. Which
-is a good thing.
+The disappearance of types was good for my profressional career. And this goodness continued
+when I started working in JavaScript. And one of the more interesting benefits I found for
+dynamic typing was that I found myself writing more tests than I usually write.
+This was _because_ dynamic typing doesn't give the safety net that static typing does.
+So you write more tests. Which is a good thing.
 
-Another good thing about dynamic typing: my code was "clean". In some ways, type information
+Another good thing about dynamic typing: my code was "clean". In many ways, type information
 is noise that you usually don't need to understand the code. And with dynamic typing,
 that noise goes away, and your code is "clean": pure intent.
 
 But I have to admit: While I loved having my code clean of types, I sometimes
-missed code completion, and the ability to know what a function accepts or returns. No worries,
-because if I missed something, my tests would tell me, but that happens _after_ coding, so
-some amount of time was to deal with problems my tests found that I would have found out
-during coding time if I had static typing.
+missed code completion, and the ability to know what a function accepts or returns. I didn't worry
+or fret about it, and not bugs were caused by this, because if I mixed my types,
+my tests would tell me that, but unfortunately that happens during the running of my testis
+and _after_ coding, so some amount of time was wasted to deal with problems my tests found
+that I would have found out during coding time if I had static typing.
 
 But when I weighed the drawbacks of static typing (as I knew it), with the benefits of dynamic
-typing, I knew that I should stick with dynamic typing. "Never go back!", said I. And I didn't like
-TypeScript's rise in popularity. It was like finally I found a nice comfortable dynamic language,
-and, well, just when I thought I was out, they pull me back in!
+typing, I knew that I wanted stick with dynamic typing. "Never go back!", said I.
+So I didn't very much like TypeScript's rise in popularity.
+It was like finally I found a nice comfortable dynamic language, and, well,
+just when I thought I was out, they pull me back in!
 
 ![just when I thought I was out, they pull me back in](/img/they-pull-me-back-in.gif)
 
 TypeScript's gaining popularity was an affront to my belief that static typing is a scourge
-on the world of development and that everybody should move to dynamic typing, and quickly! How
+on the world of development and that everybody should move to dynamic typing! How
 can developers choose to go back to static typing after they saw the horrors of static typing?
 I really couldn't understand it. And I fought back. In any forum I could—I warned of the dangers
 of static typing, and reminded people that if we weren't careful, Java-isms would come and
-take us back to the dark ages of static typing.
+take us back to the dark ages of yak shaving and incomprehensible abstractions.
 
 But after a while I calmed down, and I started thinking a bit. And I noticed two things. The first
-was that the war I was fighting was a religious war, a binary war, a holy war. And I do not like
+was that the war I was fighting was a religious war. A binary war, a holy war. And I do not like
 religious wars. And here I was, fighting one, feverishly, passionately, arguing **against something
-that I had no experience about**. And that was bad.
+that I had no experience about**. And that was not nice. I let my anger obscure my objectivity.
 
-The second thing I noticed was that a lot of people that I admired were starting to use TypeScript,
-and were liking it. So it couldn't be _all_ bad could it? Then again, a lot of those people
+The second thing I noticed was that a lot of people that I admired were using TypeScript,
+and liking it. So it couldn't be _all_ bad could it? Then again, a lot of those people
 did not have _any_ experience with static typing, so maybe they were lured by the temptation of
-static typings, but once there, they would start to convert it to Java?
+static typings, but once there, they would start to convert it to code that shaved yaks and
+generated incomprehensible abstractions?
 
 Maybe. But maybe maybe I should do what I should have done from the beginning, instead of starting
-a holy war? I should just...
+a holy war? Mayb I should just...
 
 Listen.
 
-So I talked to a lot of them. And read blog posts. And realized something I never realized: \
-TypeScript's type system is NOT Java's. TypeScript's spirit is much closer to JavaScript's than
-to Java's. How so? TypeScript's type system is just a formal definition of something
+So I talked to some TypeScript developers. And read blog posts.
+And realized something I never realized: TypeScript's type system is NOT Java's.
+TypeScript's spirit is much closer to JavaScript's than to Java's or C#'s.
+How so? TypeScript's type system is just a formal definition of something
 that was never really defined: JavaScript's type system. It does not try to bend JavaScript to its
 type system. Rather, it tries to bend _itself_ to JavaScript's. I believe it's goal is to be able
 to define a type signature for every NPM package out there, however weird that NPM package is. And
 it's succeeding marvelously!
 
-And that is the main argument against my "you're going to turn JavaScript into Java" point. It's
-not trying to emulate an OOP type system's like Java. Not at all. It's trying to formalize
-JavaScript's informal way of implementing APIs and package interfaces. And since most
-JavaScript packages interface are more concerned with _data_, and less with abstractions, then
-so does TypeScript's. Yes, you can abuse TypeScript (and JavaScript!) to create Java-ish
-abstractions, but the _spirit_ of TypeScript doesn't really want you to do that. Instead, it
+And that is the main argument against my "you're going to turn JavaScript into Java" war.
+Typescript is not trying to emulate an OOP type system's like Java. Not at all.
+It's trying to formalize JavaScript's informal way of implementing APIs and package interfaces.
+And since most JavaScript packages interface are more concerned with _data_,
+and less with abstractions, then so does TypeScript's.
+Yes, you can abuse TypeScript (and JavaScript!) to create incomprehensible abstractions,
+but the _spirit_ of TypeScript doesn't really want you to do that. Instead, it
 encourage's a JavaScript like simplicity, that is more around functions and data than it is
 around classes and abstractions.
 
@@ -96,15 +109,16 @@ But, still, one _should_ try, right? Right. So, because at work we work with Mic
 I decided to write my next Microservice in TypeScript. Just to try it out. Which I did.
 
 And it was wonderful and horrible at the same time. Wonderful, because types really do help the
-coding phase. They don't really reduce bugs, because I have tests for that, and any typing
-mistakes I make will be caught by those tests. But they _do_ reduce the coding time, becausse
-no more typing mistakes (mostly), and they _do_ increase the readability of the code.
+coding phase. They don't reduce bugs, because I have tests for that, and any typing
+mistakes I made would have been caught by those tests. But they _do_ reduce the coding time,
+because no more typing mistakes (mostly), and they _do_ increase the readability of the code.
 
 Horrible? Yes. TypeScript is the only language I know that changes its behavior based on a
 config file. In actuality, TypeScript is not _one_ language. It's an infinity of languages,
 each one _slightly_ different, and each one "generated" by a specific configuration file. And
 to figure out the language variation you want, you start playing with that arcane config file.
-Documentation? It's there, and much better than it was a year ago, but it's still arcane.
+Documentation for the configuration? It's there, and much better than it was a year ago,
+but it's still arcane.
 
 And it was horrible because of the transpilation. I had to start figuring out the tooling. And
 how to work with Docker. And debugging. And stack traces. Not a nice environment. Workable,
@@ -112,11 +126,11 @@ but less than perfect.
 
 ## The dilemma
 
-So on the one side, JavaScript: wonderful language (no, don't listen to those Java and Go snobs),
-no build time, really great tooling. And dynamically typed, with all the pros and cons that come
-with this. And on the other side, TypeScript: a variation on JavaScript, statically typed,
+So on the one side, JavaScript: wonderful language, no build time, really great tooling.
+And dynamically typed, with all the pros and cons that come with this.
+And on the other side, TypeScript: a variation on JavaScript, statically typed,
 altough as dynamic as you want it to be. And transpiled, with all the cons that come with this
- (no, there are no pros to transpilation).
+(no, there are no pros to transpilation).
 
 So what to choose for a new project? I've just joined [a new company](https://roundforest.com),
 and I'd like to figure out what to use there! My heart went for JavaScript and it's buildless
@@ -131,7 +145,7 @@ The answer it seems, is yes. And this blog post is all about that: how to enable
 in your code.
 
 > Note: this solution works in Node.js. I haven't _yet_ tried it with frontend code, but I'm pretty
-sure the results will be similar.
+  sure the results will be similar.
 
 ## The solution
 
@@ -141,11 +155,11 @@ documentation.
 
 But this time, we're not going to use them to document JavaScript _code_, but rather only
 the _types_ in our code. And to do that, we're going to not simply write JSDoc comments, but
-right them in a way that is **recognized by TypeScript**. Let's start.
+write them in a way that is **recognized by TypeScript**. Let's start.
 
-By the way, you can find all the code in this blog post at the `jsdco-typing` repo
-<https://github.com/giltayar/jsdoc-typing>, that includes an NPM package that has full typings
-and can be used with any TypeScript (or JSDoc typing) code.
+By the way, you can find all the code in this blog post at the `jsdode-typing` repo
+<https://github.com/giltayar/jsdoc-typing>, that includes the source for an NPM package
+that has full typings and can be used with any TypeScript (or JSDoc typing) code.
 
 ## Simple JSDocs
 
@@ -156,9 +170,7 @@ function add(a, b) {
   return a + b
 }
 
-module.exports = {
-  add,
-}
+module.exports = { add }
 ```
 
 (the above code uses CommonJS, but you can also use the new native ESM supprot in Node.js)
@@ -181,8 +193,8 @@ module.exports = {
 ```
 
 Same code, but we added a comment above the function `add` that defines the types of `a` and `b`.
-Is this code regular JavaScript? Yes. We just added some comments. Those comments are JSDocs.
-Let's look at tha parameters of the JSDoc:
+Is this code regular JavaScript? Yes. We just added some comments.
+Those comments are JSDocs typing comments. Let's look at the JSDoc:
 
 1. It starts with `/**` to tell the world that this is a JSDoc.
 2. It includes a line for each param in the format:
@@ -216,9 +228,9 @@ get this:
 ![hover showing JSDoc typing information](/img/jsdoc-typing-hover.png)
 
 So Visual Studio Code, because it supports TypeScript out of the box, shows the JSDoc information.
-But moreover! Because TypeScript is reading the JSDoc, it's also reading the JavaScript code
+But moreover, because TypeScript is reading the JSDoc, it's also reading the JavaScript code
 as if it was TypeScript, figuring out by itself that the return value is also a number, and
-showing that information as well! Without us have to add anything.
+showing that information as well! Without us have to add type information about the return value.
 
 ## Adding type checking to the hover information
 
@@ -229,15 +241,14 @@ up in Visual Studio Code as an error. Let's try it and see:
 ```js
 const {add} = require('./utils')
 
-console.log(add('sdfsdf', 5))
+console.log(add('sdfsdf', 5)) // => This shouldn't pass type checking
 
 console.log(add(4, 5)) // => 9
 ```
 
 If you try it in Visual Studio code, you won't get a squiggly red line on the second line where
-we try a string argument. But there is a way to do that, a shortcut to the correct way. I'll show
-you how to do it, but it's not going to be the final solution. We'll just add a `//@ts-check`
-to the start of the code:
+we pass a string argument. But there is a way to do that, a shortcut to the correct way. I'll show
+you how to do it. We'll just add a `//@ts-check` to the start of the code:
 
 ```js
 //@ts-check
@@ -252,24 +263,25 @@ Let's now see it in Visual Studio Code:
 
 ![squiggly-red-line-on-bad-call](/img/jsdoc-squiggly-red-line-with-ts-check.png)
 
-Wow! Types are working! I can now see my errors. But that isn't enough. We want typechecking!
+Wow! Types are working! I can now see my errors! Typescript just typechecked my file. Yes,
+it's not failing the build or the tests yet, but wait for it...
 
 ## Implicit and explicit typing
 
-Let's define a variable that accepts the value of the call to `add`:
+Let's define a variable that accepts the return of the call to `add`:
 
 ```js
 const addition = add(7, 8)
 ```
 
 What will be the type of this variable? TypeScript does it's thing, and the type will
-be `addition`, because TypeScript knows how to automatically infer the type of the variable.
+be `number`, because TypeScript knows how to automatically infer the type of the variable.
 To prove that it does, let's hover above the new variable:
 
 ![implicit typing of variable](img/jsdoc-implicit-typing-of-variable.png)
 
 This has nothing to do with JSDoc: it's TypeScript implicitly typing the variable to the correct
-type. But what if we wanted the type to be explicit? What if we wanted the equivalent of this
+type. But what if we wanted the type to be explicit? What if we wanted the JSDoc equivalent of this
 TypeScript code?
 
 ```ts
@@ -290,7 +302,7 @@ can infer the type of the variable automatically.
 ## Running typechecking as a test
 
 To add real typechecking, one that will fail the build, and not just show up in Visual Studio Code,
-we need TypeScript in our package. Let's do that:
+we need to add TypeScript to our package. Let's do that:
 
 ```sh
 npm install --save-dev typescript
@@ -299,7 +311,7 @@ npm install --save-dev typescript
 Great, we've installed TypeScript. Let's now run typechecking on our files:
 
 ```log
-$ tsc --noEmit --allowJS src/*.js
+$ npx tsc --noEmit --allowJS src/*.js
 
 src/jsdoc-typing.js:4:17 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
 
@@ -309,7 +321,8 @@ src/jsdoc-typing.js:4:17 - error TS2345: Argument of type 'string' is not assign
 Found 1 error.
 ```
 
-Yup, we found the error using TypeScript. We've just completed step 1 of our JSDoc typing journey.
+Yup, we found the error using TypeScript, and it failed the build.
+We've just completed step 1 of our JSDoc typing journey.
 
 A few comments on the options we gave to TypeScript:
 
@@ -320,20 +333,19 @@ A few comments on the options we gave to TypeScript:
 
 ## Configuring TypeScript options correctly
 
-If we want to be serious about TypeScript, we need to configure it like the Pros. Let's do that,
-by adding a `tsconfig.json` to our project root. We'll build this file slowly, understanding
+If we want to be serious about TypeScript, we need to configure it like the pros. To do that,
+we add a `tsconfig.json` to our project root. We'll build this file slowly, understanding
 each step:
 
 ```json
 {
-  "include": ["src/**/*.js", "src/**/*.d.ts"],
+  "include": ["src/**/*.js"],
   "exclude": ["node_modules"]
 }
 ```
 
 First, we define which files we want to type check, and which we don't. This is pretty
-self-explanatory, and you may need to change this to conform to where your JS files are, but
-notice that we're adding `*.d.ts` files. We'll be using this later. Let's just ignore this for now.
+self-explanatory, and you may need to change this to conform to where your JS files are.
 And, yes, you do need to tell TypeScript to ignore `node_modules`, because otherwise it won't and
 you will get i) long typechecking times, and ii) lots of errors in packages you don't care about.
 
@@ -342,7 +354,7 @@ Let's continue:
 ```json
 {
   "compilerOptions": {
-    "lib": ["es2020"],
+    "lib": ["es2020", "DOM"],
     "moduleResolution": "node",
     "module": "CommonJS",
   },
@@ -352,8 +364,8 @@ Let's continue:
 ```
 
 These new options defines the source code that it will get. We're telling it that it's going
-to use the latest JavaScript defitions, and that we're using CommonJS.
-If you're using ESM, use `esnext`.
+to use the latest JavaScript defitions, and that we're using CommonJS. Oh, and the `DOM` is
+so that it recognizes `console.log`.
 
 Let's continue with the options that allow us to use JS files:
 
@@ -370,16 +382,16 @@ Let's continue with the options that allow us to use JS files:
 }
 ```
 
-* `allowJs` allows JS files to be typeChecked
+* `allowJs` allows JS files to be typechecked
 * `checkJs` tells TypeScript to check _all_ JavaScript files, and not just those with `//@ts-check`
 * `resolveJsonModule` tells Typescript that `require`-ing `.json` files is OK. It will even generate
   a type for the JSON in the file, so it will be typechecked correctly. Because we're using
   JavaScript, and `require`-ing JSON in JavaScript is fine, we turn this on.
 * `noEmit` tells TypeScript not to emit transpiled files, which we don't really want because
-  we already have our JavaScript files
+  we already have our JavaScript files.
 
 Last, but not least, we have our regular TypeScript configurations. Let's go all in, and use the
-strictest option, which tells TypeScript to go all in and do the strictest checks:
+strictest option, which tells TypeScript to do the strictest checks:
 
 ```json
 {
@@ -418,7 +430,7 @@ Now we can have TypeScript be part of our tests by adding it to our `scripts` in
 ```json
 {
   "scripts": {
-    "test": "... && tsc"
+    "test": "mocha/jest ... && tsc"
   }
 }
 ```
@@ -426,7 +438,7 @@ Now we can have TypeScript be part of our tests by adding it to our `scripts` in
 Now, when we run `npm test`, Typescript (`tsc`) will run, look at our JSDoc typings,
 and typecheck all our JS files.
 
-We've got TypeScript, but without the transpilation.
+We've got TypeScript, but without the transpilation. Amazing, no?
 
 ## Typedefs, classes, and importing types
 
@@ -434,7 +446,7 @@ Sure, but how much of TypeScript do we have? Do we have `interface Foo {}`? `typ
 `class`? We do! We'll get to `interface` later, but let's start with `type Foo = ...`.
 
 We'll define a function, `breakName`, that breaks a full name to the "first name" and "last name".
-Please don't use this code in production, as it's an extremely naïve implementation:
+(Please don't use this code in production, as it's an extremely naïve implementation):
 
 ```js
 function breakName(name) {
@@ -444,7 +456,7 @@ function breakName(name) {
 }
 ```
 
-Since I'm using Visual Studio Code, and you write the above code, I'll get a squiggly red line
+Since I'm using Visual Studio Code, when I write the above code, I get a nice squiggly red line
 on the `name` parameter:
 
 ![error when untyped parameter](img/jsdoc-error-on-unknown-type-in-breakname.png)
@@ -456,6 +468,7 @@ parameters. So let's fix that, and as long as we're there, let's define the retu
 ```js
 /**
  * @param {string} name
+ *
  * @returns {{firstName: string, lastName: string}}
  */
 function breakName(name) {
@@ -466,8 +479,8 @@ function breakName(name) {
 ```
 
 We defined the `{firstName: string, lastName: string}` as a return value. As I said:
-we have the full power of Typescript at your disposal. Notice the double curly braces `{{...}}`
-when defininig the return type. The outer curly braces are needed by JSDoc, who's syntax
+you have the full power of Typescript at your disposal. Notice the double curly braces `{{...}}`
+when defininig the return type. The outer curly braces are needed by JSDoc, whose syntax
 forces us to surround all types with curly braces, and the inner curly braces are for the TypeScript
 type definition for an object.
 
@@ -492,6 +505,7 @@ To use it in the function, we change it a bit:
 ```js
 /**
  * @param {string} name
+ *
  * @returns {BrokenName}
  */
 function breakName(name) {
@@ -505,6 +519,7 @@ And to use it, we just:
 
 ```js
 const brokenName = breakName('Gil Tayar')
+
 console.log(brokenName) // => { firstName: 'Gil', lastName: 'Tayar' }
 ```
 
@@ -517,7 +532,7 @@ What if we wanted to do explicit typings in the above example? As above, we can 
 const brokenName = breakName('Gil Tayar')
 ```
 
-But what happens if `breakName` and `BrokenName` come from another module? In TypeScript we can use:
+But what happens if `breakName` and `BrokenName` come from another file? In TypeScript we can use:
 
 ```ts
 import {BrokenName} from './names'
@@ -535,22 +550,22 @@ const brokenName = breakName('Gil Tayar')
 ```
 
 The `import` in JSDoc allows you to import "types stuff" from other modules and packages. And
-if you get tired of writing `import('./names')` everywhere, you can always write:
+if you get tired of writing `import('./names')` everywhere, you can always write...
 
 ```js
 /**@typedef {import('./names').BrokenName} BrokenName */
 ```
 
-to alias it in your other module.
+...to alias it in your other module.
 
 ## Using types from other NPM packages
 
-Would this `import` work with other libraries? Definitely! Let's talk about using types from
-other NPM package. We have three different types of libraries:
+Would this `import` work with other NPM pacakges? Definitely! Let's talk about using types from
+another NPM package. We have three different types of Packages:
 
-* Libraries that have type information, especially libraries that were written in TypeScript
-* Libraries that have external type information from a `@types/...` package
-* Libraries that don't have type information
+* Packages that have type information, especially packages that were written in TypeScript
+* Packages that have external type information from a `@types/...` package
+* Packages that don't have type information
 
 Let's talk about each one, and how to use each.
 
@@ -575,7 +590,13 @@ const slugifyOptions = {separator: '_'}
 console.log(slugify('i ❤️ slugs', slugifyOptions)) // => i_slugs
 ```
 
-And if there's a typechecking error, TypeScript will fail:
+And if there's a typechecking error, TypeScript will fail. So for this code:
+
+```js
+slugify('something', {badOption: true})
+```
+
+Then the failure will be:
 
 ```log
 $ npm test
@@ -607,10 +628,11 @@ src/jsdoc-typing.js:5:23 - error TS7016: Could not find a declaration file for m
   Try `npm i --save-dev @types/lodash` if it exists or add a new declaration (.d.ts) file containing `declare module 'lodash';`
 
 5 const {map} = require('lodash')
+                        ~~~~~~~~
 ```
 
 Weird error. It says (if I may interpret), that it couldn't find type information for `lodash`.
-And it won't continue without types, it doesn't want to continue. What can we do?
+And it won't continue without types. What can we do?
 
 Theoretically, we can write the type declarations ourselves, but that's a lot of work, and we'll
 see how to do it below. But another option is to use an existing, community-owned, database of
@@ -623,9 +645,6 @@ npm install --save-dev @types/lodash
 
 It works! If a package has type information that is community-owned, it is probably in
 `@types/<package-name>`, and if you install it, you will get typechecking on that library.
-I've found that most of the type definitions in `@types/...` are of high quality. But not all
-of them... Just remember that those type definitions are used in the same way by the TypeScript
-community itself.
 
 Now if we typecheck the file, we find we have type definitions for the `map` function we imported.
 Yay!
@@ -638,7 +657,7 @@ use the package... [flowers](https://www.npmjs.com/package/flowers): It's a pack
 lists about 400 different types of flowers, and is a proof that you can find _anything_ in the NPM
 registry!
 
-And it doesn't have a `@types` type package:
+And obviously it doesn't have a `@types` type package:
 
 ```sh
 $ npm i @types/flowers
@@ -677,8 +696,8 @@ declare module 'flowers' {
 }
 ```
 
-But we don't have TypeScript code. And we don't TypeScript code, because we don't want to do
-translation. And there's no equivalent to `declare module...` in JSDoc. But there is another
+But we don't have TypeScript code. And we don't want TypeScript code, because we don't want to do
+transpile. And there's no equivalent to `declare module...` in JSDoc. But there is another
 solution: `.d.ts` files. These are TypeScript "declaration files" that describe the types and API
 of a module, and are actually what is exported by packages when they have type definitions,
 and is what is exported by those type definition packages in the `@types/...` repository. They
@@ -706,8 +725,8 @@ we need to `include` it in the `tsconfig.json`:
 By adding `src/**/*.d.ts`, we tell TypeScript to add `global.d.ts` to the type checking, and now
 if we type check our file using `npm test`, it completes with no error.
 
-`global.d.ts` is a nice escape hatch because you can use any type script type definitions in there.
-We'll be using it later for some advanced TypeScript stuff.
+`.d.ts` files are a nice escape hatch because you can use any type script type definitions in them.
+We'll be using them later for some advanced TypeScript stuff.
 
 ## Advanced Typescript
 
@@ -779,31 +798,33 @@ console.log(numberOrString.toUpperCase())
 ```
 
 The typechecker will fail on `numberOrString.toUpperCase()` because TypeScript
-correcrly infers the type of `numberOrString` to be `number | string`. And yet, we _know_
+correctly infers the type of `numberOrString` to be `number | string`. And yet, we _know_
 that the type of `numberOrString` is always `string` because `Math.random()` always returns a
 number in the range 0…1. If we were in TypeScript, we could write:
 
 ```ts
 const numberOrString = Math.random() <= 1 ? "This is a string" : 100;
-console.log(numberOrString.toUpperCase() as string)
+console.log((numberOrString as string).toUpperCase())
 ```
 
 Does JSDoc have a comparable mechanism? The answer is yes:
 
 ```js
 const numberOrString = Math.random() <= 1 ? "This is a string" : 100;
-console.log(/**@type {string}*/(numberOrString.toUpperCase()))
+console.log(/**@type {string}*/(numberOrString).toUpperCase()))
 ```
 
-We've already seen that `@type` can define the
+We've already seen that `@type` can define the type of a variable. Here we see that `@type` can
+define the type of an _expression. Notice that the expression MUST be surrounded by parentheses,
+otherwise the `@type` won't know what expression is to be cast.
 
 > This is the ugliest part of JSDoc, and I truly wish there was a nicer way of typecasting, but
-  there isn't unfortunately. It's the only place in JSDoc land that I really dislike.
+  there isn't any unfortunately. It's the only place in JSDoc land that I really dislike.
 
 ### Templates
 
 Now for the craziest thing in JSDoc: you can even do templates. Let's go wild. Let's write
-a function, `mapValue`, that receives an object, and a map function and returns an object
+a function, `mapValue`, that receives an object and a map function, and returns an object
 where the keys are the same, but the values are mapped:
 
 ```js
@@ -812,7 +833,7 @@ function mapValues(object, mapFunction) {
 }
 ```
 
-Nice and simple. Let's add types, without templates, using `any`:
+Nice and simple. Let's add types, but without templates, using the `any` type:
 
 ```js
 /**
@@ -826,9 +847,9 @@ function mapValues(object, mapFunction) {
 }
 ```
 
-Still nice (`Record` is a builtin type in TypeScript,
-and defines an object with key type and value tyep). Better than before, because we know that
-the first parameter needs to be an object, and the second one a mapping function.
+(`Record` is a builtin type in TypeScript, and defines an object with key type and value tyep).
+Better than before, because we know that the first parameter needs to be an object,
+and the second one a mapping function.
 
 But if we write this code:
 
@@ -837,7 +858,7 @@ const result = mapValue({a: 4}, x => x + 1)
 result.x
 ```
 
-TypeScript won't catch us on the second line, even though it's obvious that `result` doesn't have
+TypeScript won't catch us on the second line, even though it's obvious that `result` shouldn't have
 an `x` property.
 
 If we were in TypeScript land, we would write something like this:
@@ -872,27 +893,27 @@ are defined according to those template parameters. And now, if we use the funct
 ```js
 const result = mapValue({a: 4}, x => x + 1)
 result.x
-    //~~
-   //Property 'x' does not exist on type 'Record<"a", number>'
+    // ~
+    //Property 'x' does not exist on type 'Record<"a", number>'
 ```
 
 ...we get the correct error.
 
-There's just one small problem: `mapValues` itself doesn't typecheck. `Object.fromEntries/entries`
-doesn't return the correct types and resets them to a generic (`Record<any, any>`)
-which makes TypeScript (rightfully) fail the typechecking because the return type of `mapValue`
-is more specific. Two options: typecast it, or just ignore the error. This time, I'll ignore the
-error:
+There's just one small problem: `mapValues` itself doesn't typecheck. Typescript's internal
+definition for `Object.fromEntries/entries` doesn't return the correct types and resets
+them to a generic (`Record<any, any>`) which makes TypeScript (rightfully) fail
+the typechecking because the return type of `mapValue` is more specific.
+Two options: typecast it, or just ignore the error. This time, I'll ignore the error:
 
 ```js
 function mapValues(object, mapFunction) {
-  //@ts-ignore-error
+  //@ts-ignore
   return Object.fromEntries(Object.entries(object).map(([key, value]) => [key, mapFunction(value)]))
 }
 ```
 
-The `//@ts-ignore` tells TypeScript to ignore the TypeScript errors in the line following it.
-Use it, but use it sparingly. An even better option, in my opinion, is the companion
+The `//@ts-ignore` tells TypeScript to ignore the TypeScript errors in the line following
+the comment. Use it, but use it sparingly. An even better option, in my opinion, is the companion
 `@ts-expect-errpr`:
 
 ```js
@@ -903,7 +924,7 @@ function mapValues(object, mapFunction) {
 ```
 
 This will ignore any typechecking failures in the next line, but **will fail the typecheck** if
-there are no errors. It's a good way to ensure that that ignoring is really needed.
+there are _no_ errors. It's a good way to ensure that that the ignoring is really needed.
 
 ## Using a bit of TypeScript typings
 
@@ -924,7 +945,7 @@ Would be
 */
 ```
 
-But surprisingly enough, there is no equivalent in JSDoc to
+But there is no equivalent in JSDoc to
 
 ```ts
 interface Point {
@@ -933,9 +954,9 @@ interface Point {
 }
 ```
 
-So what do we? Well, we _can_ get by with only type aliases, but it would be nice
-to be able to declare an interface. And it turns out that we can: we'll use a new
-`point-type.d.ts` file to define the `interface Point`, and then use `import` to use it. Let's
+So what do we? While we _can_ get by with only type aliases, it would be nice
+to be able to declare an `interface`. And it turns out that we can: we'll use a new
+`.d.ts` file to define the `interface Point`, and then use `import` to use it. Let's
 start with the type definition:
 
 ```ts
@@ -961,16 +982,15 @@ function move(point, dx, dy) {
   return {x: point.x + dx, y: point.y + dy}
 }
 
-console.log(move({x: 2, y: 4}, 1, 1))
+console.log(move({x: 2, y: 4}, 1, 1)) // ==> { x: 3, y: 5 }
 ```
 
 We've used `import('./point-type).Point` to "get" the exported type, and used it in our regular
 JSDoc code. Mission accomplished!
 
 > Note: you cannot use `declare module` and `export` in the same `.d.ts` file
-  (for some arcane reason I can't understand),
-  so you need at least two separate `.d.ts` files if you
-  have both `declare module ...` and `export ...`.
+  (for some arcane reason I can't understand), so you need at least two separate `.d.ts` files
+  if you want both `declare module ...` and `export ...`.
 
 ## Exporting `.d.ts` files
 
@@ -992,9 +1012,10 @@ run before we publish the package to NPM. This is how it will look like:
 ```
 
 We're adding two options when running `tsc` because we _do_ want to emit files (`--noEmit false`),
-but want to emit only `.d.ts` files (`--emitDeclarationOnly true`)
+but want to emit only `.d.ts` files (`--emitDeclarationOnly true`).
 
-But we need to tell it where to emit the `.d.ts` files, but we can do that in the `tsconfig.json`:
+We also need to tell TypeScript where to emit the `.d.ts` files,
+and we do so in the `tsconfig.json`:
 
 ```json
 {
@@ -1007,9 +1028,9 @@ But we need to tell it where to emit the `.d.ts` files, but we can do that in th
 }
 ```
 
-This tells "TypeScript" to omit the declarations to the `types` directory. We also need to make
+This tells TypeScript to generate the declarations into the `types` directory. We also need to make
 sure that when we publish this package, the `types` directory will also be published, so
-if you're enable-listing the files you publish by using `files` in `package.json`, don't forget
+if you're whitelisting the files you publish by using `files` in `package.json`, don't forget
 to add the `types` directory there:
 
 ```json
@@ -1018,10 +1039,10 @@ to add the `types` directory there:
 }
 ```
 
-And, while we're at it, we don't really want the `types` directory to be source controlled,
+And, while we're at it, we don't really want the `types` directory to be source-controlled,
 because it's a file that generated by source code, so we add it to `.gitignore`:
 
-```txt
+```sh
 # .gitignore
 node_modules
 types
@@ -1029,7 +1050,7 @@ types
 
 Last thing we need to do before we publish this package, is add a property in the `package.json`
 that specifies where the root `.d.ts` file is, so that any package that `npm install`-s this package
-will know how to get at it's type definitions. So let's add the `"types"` field:
+will know how to get at its type definitions. We define this using the `"types"` property:
 
 ```json
 {
@@ -1039,14 +1060,14 @@ will know how to get at it's type definitions. So let's add the `"types"` field:
 ```
 
 Just like you define the package's entry point using `main`, so you define your package's type
-definition entry point using `types`. And this `.d.ts` was generated using the `npm run build`
+definition entry point using `types`. And we generated this`.d.ts` using the `npm run build`
 script we created earlier, and with the help of the `tsconfig.json` properties we added
-which told it where to generate those type definition files.
+which told it where to generate those type definition files. Phew!
 
 ### One last fine tune
 
-One last thing. Remember those `.d.ts` files? Especially `point-type.d.ts`, that includes
-additional TypeScript types? Well, it seems TypeScript forgot to copy them to the `types` director
+One last thing. Remember those `.d.ts` files we wrote manually? `global.d.ts` and `point-type.d.ts`?
+Well, it seems TypeScript forgot to copy them to the `types` directory
 (is this a bug? I think it is), so we'll have to do it ourselves in our `build` script:
 
 ```json
@@ -1072,24 +1093,24 @@ Mission accomplished!
 
 ## Drawbacks
 
-Are there any drawbacks? Yes, of course there are. The four I can think of are:
+Are there any drawbacks to this method? Yes, of course there are. The four I can think of are:
 
-* The type definitions in JSDoc comments are sometimes clumsy and too verbose at times
+* The type definitions in JSDoc comments are sometimes clumsy and verbose
 * You can't do everything with those type definitions, and while there is a solution for that
   (using `.d.ts` files as described above), it feels like a kludge
 * The type casting syntax is *very* clumsy and is a wart on the code. And unlike
-  the JSDoc comments, it sits _right_ in your code
-* The community is
+  the JSDoc comments, it sits _right_ inside your code
+* There isn't a lot of experience using JSDoc typings out there. Hopefully, this blog
+  post will change that.
 
 ## Summary
 
-But, weighing the drawbacks, I still feel that this is a better solution than TypeScript
-transpiling.
-
-You can use JSDoc typing to do _everything_ you can do with TypeScript, but with pure JavaScript,
-using the ability of TypeScript to read type definitions encoded in JSDoc comments,
-and thus enable embedding type information in your JavaScript files,
-and using that type information to typecheck your JS files, as if they were TypeScript.
+But weighing the drawbacks, I still feel that this is a better solution than TypeScript
+transpiling. You can use JSDoc typing to do _everything_ you can do with TypeScript,
+but with pure JavaScript and without any transpilation, while using the ability of TypeScript
+to read type definitions encoded in JSDoc comments, and thus enable
+embedding type information in your JavaScript files, and using that type information
+to typecheck your JS files, as if they were TypeScript.
 
 So go ahead and use JSDoc typings: **all the benefits of TypeScript, without the drawbacks!**
 
@@ -1097,5 +1118,4 @@ So go ahead and use JSDoc typings: **all the benefits of TypeScript, without the
 
 * Great documentation on JSDoc comments on the Typescript site: <https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html>
 * The Github repo with the sample code above, and a complete example of such a JSDoc package: <https://github.com/giltayar/jsdoc-typing>
-
-
+* TSConfig.json reference: <https://www.typescriptlang.org/tsconfig>
