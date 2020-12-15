@@ -1,6 +1,6 @@
 ---
-title: All the benefits of TypeScript, with none of the drawbacks
-description: How you can get all the benefits of TypeScript, without needing to transpile to TypeScript
+title: "JSDoc typings: all the benefits of TypeScript, with none of the drawbacks"
+description: How you can use JSDoc typings to get all the benefits of TypeScript, without needing to transpile to TypeScript
 date: 2020-11-27
 tags:
   - TypeScript
@@ -10,9 +10,9 @@ layout: layouts/post.njk
 <!-- markdownlint-disable MD029 -->
 TypeScript. For me, it's a love-hate relationship.
 
-I started my developer life in static typing
-(well, if we ignore Basic, which is dynamically typed): C, C++, Java. All, statically typed.
-Then, somewhere around 2010, I had the good fortune to start working in Python.
+I started my developer life in statically typed languages
+(well, if we ignore Basic, which is dynamically typed): C, C++, and Java.
+Then somewhere around 2010, I had the good fortune to start working in Python.
 And I saw the light! I was liberated! Suddenly all those Java and C++ design sessions, where
 we fretted and worried and analyzed our class hierarchy to death. We split hairs about
 this design or that design, instead of just, well, working.
@@ -283,17 +283,9 @@ We still can. The equivalent JSDoc is this:
 const addition = add(7, 8)
 ```
 
-Use @type to type the variable immediately after that one. You can even type an expression, thus:
-
-```js
-const anotherAddition = /**@type {number} */(add(7, 8))
-```
-
-Note that the expression MUST be surrounded by parentheses.
-
-And, yes, this is starting to become unwieldy and ugly. Fortunately, we don't need to use `@type`
-a lot in our code, so this ugliness doesn't appear a lot. But be warned! It _does_ appear,
-and it's not pretty. Life is full of compromises.
+`@type` in the line before types the variable to whatever you want it to be, explicitly.
+The nice thing about TypeScript is that you usually don't need to type things explicitly as it
+can infer the type of the variable automatically.
 
 ## Running typechecking as a test
 
@@ -306,7 +298,7 @@ npm install --save-dev typescript
 
 Great, we've installed TypeScript. Let's now run typechecking on our files:
 
-```sh
+```log
 $ tsc --noEmit --allowJS src/*.js
 
 src/jsdoc-typing.js:4:17 - error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
@@ -546,7 +538,7 @@ The `import` in JSDoc allows you to import "types stuff" from other modules and 
 if you get tired of writing `import('./names')` everywhere, you can always write:
 
 ```js
-/**@typedef {import('./names').BrokenName} BrokenName*/
+/**@typedef {import('./names').BrokenName} BrokenName */
 ```
 
 to alias it in your other module.
@@ -585,7 +577,9 @@ console.log(slugify('i ❤️ slugs', slugifyOptions)) // => i_slugs
 
 And if there's a typechecking error, TypeScript will fail:
 
-```sh
+```log
+$ npm test
+
 src/jsdoc-typing.js:39:23 - error TS2345: Argument of type '{ badOption: boolean; }' is not assignable to parameter of type 'Options'.
   Object literal may only specify known properties, and 'badOption' does not exist in type 'Options'.
 
@@ -606,7 +600,9 @@ const {map} = require('lodash')
 
 If we typecheck this, we get:
 
-```sh
+```log
+$ npm test
+
 src/jsdoc-typing.js:5:23 - error TS7016: Could not find a declaration file for module 'lodash'. '/Users/giltayar/code/jsdoc-typing/node_modules/lodash/lodash.js' implicitly has an 'any' type.
   Try `npm i --save-dev @types/lodash` if it exists or add a new declaration (.d.ts) file containing `declare module 'lodash';`
 
@@ -636,16 +632,458 @@ Yay!
 
 ### Using types from libraries that don't have type information
 
+Let's try another NPM package. This time, this package doesn't have type information
+embedded in it, _and_ doesn't have a community-built type package for it. As an example, we'll
+use the package... [flowers](https://www.npmjs.com/package/flowers): It's a package that
+lists about 400 different types of flowers, and is a proof that you can find _anything_ in the NPM
+registry!
+
+And it doesn't have a `@types` type package:
+
+```sh
+$ npm i @types/flowers
+npm ERR! code E404
+npm ERR! 404 Not Found - GET https://registry.npmjs.org/@types%2fflowers - Not found
+...
+```
+
+So what happens when we add it to our code:
+
+```js
+const flowers = require('flowers')
+```
+
+Let's typecheck it: as expected, we get an error because TypeScript wants type definitions for
+the module:
+
+```log
+$ npm test
+
+src/jsdoc-typing.js:6:25 - error TS7016: Could not find a declaration file for module 'flowers'. '/Users/giltayar/code/jsdoc-typing/node_modules/flowers/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/flowers` if it exists or add a new declaration (.d.ts) file containing `declare module 'flowers';`
+
+6 const flowers = require('flowers')
+                          ~~~~~~~~~
+```
+
+If we were working in TypeScript, the solution would be simple: add a `declare module 'flowers'`
+somewhere in our TypeScript code. This signals to TypeScript that the module exists,
+and there are no type definitions for it, so anything coming out of it is just `any`. Of
+course, we could go the extra mile, and even define the types for this module using:
+
+```ts
+declare module 'flowers' {
+  // ... type definitions
+}
+```
+
+But we don't have TypeScript code. And we don't TypeScript code, because we don't want to do
+translation. And there's no equivalent to `declare module...` in JSDoc. But there is another
+solution: `.d.ts` files. These are TypeScript "declaration files" that describe the types and API
+of a module, and are actually what is exported by packages when they have type definitions,
+and is what is exported by those type definition packages in the `@types/...` repository. They
+include _only_ type definitions, and have no executable code in them.
+
+And we can use them by having a few of those in our project. So we create a file, let's call it
+`global.d.ts`, and add the `declare module 'flowers'` there:
+
+```ts
+// src/global.d.ts
+declare module 'flowers'
+```
+
+That is not enough, though. We need the TypeScript type checker to know about this file, so
+we need to `include` it in the `tsconfig.json`:
+
+```json
+{
+  "...": "",
+  "include": ["src/**/*.js", "src/**/*.d.ts"],
+  "exclude": "..."
+}
+```
+
+By adding `src/**/*.d.ts`, we tell TypeScript to add `global.d.ts` to the type checking, and now
+if we type check our file using `npm test`, it completes with no error.
+
+`global.d.ts` is a nice escape hatch because you can use any type script type definitions in there.
+We'll be using it later for some advanced TypeScript stuff.
+
 ## Advanced Typescript
 
-* `@template@`, `@class`
+Can we do other, more advanced stuff that we can do in TypeScript? Yes! Almost everything
+you can do in TypeScript, you can do with JSDoc. Let's start with `class`
+
+### Class type definitions
+
+```js
+class Person {
+  /**@type {string}*/
+  firstName
+  /**@type {string}*/
+  lastName
+
+  /**
+   * @param {string} firstName
+   * @param {string} lastName
+   */
+  constructor(firstName, lastName) {
+    this.firstName = firstName
+    this.lastName = lastName
+  }
+
+  /**
+   * @returns {string}
+   */
+  fullName() {
+    return `${this.firstName} ${this.lastName}`
+  }
+}
+```
+
+The above is a class `Person`, with two properties (`firstName` and `lastName`) and a method
+(`fullName()`), that are all typechecked. We didn't really use any new JSDoc capabilities,
+just the regular `@type`, `@param`, and `@return`. But since it's inside a class, TypeScript
+knows how to deal with it, and can typecheck it. So the following bad code...
+
+```js
+const p1 = new Person('Gil', 'Tayar')
+p1.someName
+p1.fullName(4)
+```
+
+...will fail typechecking:
+
+```log
+$ npm t
+
+src/jsdoc-typing.js:50:4 - error TS2339: Property 'someName' does not exist on type 'Person'.
+
+50 p1.someName
+      ~~~~~~~~
+
+src/jsdoc-typing.js:51:13 - error TS2554: Expected 0 arguments, but got 1.
+
+51 p1.fullName(4)
+               ~
+```
+
+### Type Casting
+
+In TypeScript, we sometimes need to cast something, to tell the typechecker that we _know_ that
+the thing is of a certain type. As an example, take this example:
+
+```js
+const numberOrString = Math.random() <= 1 ? "This is a string" : 100;
+console.log(numberOrString.toUpperCase())
+```
+
+The typechecker will fail on `numberOrString.toUpperCase()` because TypeScript
+correcrly infers the type of `numberOrString` to be `number | string`. And yet, we _know_
+that the type of `numberOrString` is always `string` because `Math.random()` always returns a
+number in the range 0…1. If we were in TypeScript, we could write:
+
+```ts
+const numberOrString = Math.random() <= 1 ? "This is a string" : 100;
+console.log(numberOrString.toUpperCase() as string)
+```
+
+Does JSDoc have a comparable mechanism? The answer is yes:
+
+```js
+const numberOrString = Math.random() <= 1 ? "This is a string" : 100;
+console.log(/**@type {string}*/(numberOrString.toUpperCase()))
+```
+
+We've already seen that `@type` can define the
+
+> This is the ugliest part of JSDoc, and I truly wish there was a nicer way of typecasting, but
+  there isn't unfortunately. It's the only place in JSDoc land that I really dislike.
+
+### Templates
+
+Now for the craziest thing in JSDoc: you can even do templates. Let's go wild. Let's write
+a function, `mapValue`, that receives an object, and a map function and returns an object
+where the keys are the same, but the values are mapped:
+
+```js
+function mapValues(object, mapFunction) {
+  return Object.fromEntries(Object.entries(object).map(([key, value]) => [key, mapFunction(value)]))
+}
+```
+
+Nice and simple. Let's add types, without templates, using `any`:
+
+```js
+/**
+ * @param {Record<any, any>} object
+ * @param {(t: any) => any} mapFunction
+ *
+ * @returns {Record<any, any>}
+ */
+function mapValues(object, mapFunction) {
+  return Object.fromEntries(Object.entries(object).map(([key, value]) => [key, mapFunction(value)]))
+}
+```
+
+Still nice (`Record` is a builtin type in TypeScript,
+and defines an object with key type and value tyep). Better than before, because we know that
+the first parameter needs to be an object, and the second one a mapping function.
+
+But if we write this code:
+
+```js
+const result = mapValue({a: 4}, x => x + 1)
+result.x
+```
+
+TypeScript won't catch us on the second line, even though it's obvious that `result` doesn't have
+an `x` property.
+
+If we were in TypeScript land, we would write something like this:
+
+```ts
+<K extends string|number|symbol, T, W> function (obj: Record<K, T>, mapFunction: (t: T) => W): Record<K, W> {
+  //...
+}
+```
+
+Is there an equivalent in JSDoc? Incredibly enough, there is:
+
+```js
+/**
+ * @template {string|number|symbol} K
+ * @template T
+ * @template W
+ * @param {Record<K, T>} object
+ * @param {(t: T) => W} mapFunction
+ *
+ * @returns {Record<K, W>}
+ */
+function mapValues(object, mapFunction) {
+  return Object.fromEntries(Object.entries(object).map(([key, value]) => [key, mapFunction(value)]))
+}
+```
+
+This is the equivalent to the above TypeScript template code: three template variables
+(`K`, `T`, and `W`), where `K` also `extends string|number|symbol`, and the parameters
+are defined according to those template parameters. And now, if we use the function incorrectly...
+
+```js
+const result = mapValue({a: 4}, x => x + 1)
+result.x
+    //~~
+   //Property 'x' does not exist on type 'Record<"a", number>'
+```
+
+...we get the correct error.
+
+There's just one small problem: `mapValues` itself doesn't typecheck. `Object.fromEntries/entries`
+doesn't return the correct types and resets them to a generic (`Record<any, any>`)
+which makes TypeScript (rightfully) fail the typechecking because the return type of `mapValue`
+is more specific. Two options: typecast it, or just ignore the error. This time, I'll ignore the
+error:
+
+```js
+function mapValues(object, mapFunction) {
+  //@ts-ignore-error
+  return Object.fromEntries(Object.entries(object).map(([key, value]) => [key, mapFunction(value)]))
+}
+```
+
+The `//@ts-ignore` tells TypeScript to ignore the TypeScript errors in the line following it.
+Use it, but use it sparingly. An even better option, in my opinion, is the companion
+`@ts-expect-errpr`:
+
+```js
+function mapValues(object, mapFunction) {
+  //@ts-expect-error
+  return Object.fromEntries(Object.entries(object).map(([key, value]) => [key, mapFunction(value)]))
+}
+```
+
+This will ignore any typechecking failures in the next line, but **will fail the typecheck** if
+there are no errors. It's a good way to ensure that that ignoring is really needed.
 
 ## Using a bit of TypeScript typings
 
-* Using real Typescript in `.d.ts` files
+We've seen that most everything you can do in TypeScript, you can do in JavaScript with JSDocs,
+and get full typechecking. But there are some things we can do in TypeScript that are
+not (yet?) possible using JSDoc typings. One example is, incredibly enough, `interface`: you can
+define a type alias to an interface, but you can't define an interface. So the equivalent of
+
+```ts
+type Point = {x: number, y: number}
+```
+
+Would be
+
+```js
+/**
+ * @typedef {{x: number, y: number}} Point
+*/
+```
+
+But surprisingly enough, there is no equivalent in JSDoc to
+
+```ts
+interface Point {
+  x: number,
+  y: number
+}
+```
+
+So what do we? Well, we _can_ get by with only type aliases, but it would be nice
+to be able to declare an interface. And it turns out that we can: we'll use a new
+`point-type.d.ts` file to define the `interface Point`, and then use `import` to use it. Let's
+start with the type definition:
+
+```ts
+// point-type.d.ts
+export interface Point {
+  x: number
+  y: number
+}
+```
+
+And now, since we've already told TypeScript to include `*.d.ts` files in the typechecking, we
+can use it in our JavaScript code:
+
+```js
+/**
+ * @param {import('./point-type').Point} point
+ * @param {number} dx
+ * @param {number} dy
+ *
+ * @returns {import('./point-type').Point}
+ */
+function move(point, dx, dy) {
+  return {x: point.x + dx, y: point.y + dy}
+}
+
+console.log(move({x: 2, y: 4}, 1, 1))
+```
+
+We've used `import('./point-type).Point` to "get" the exported type, and used it in our regular
+JSDoc code. Mission accomplished!
+
+> Note: you cannot use `declare module` and `export` in the same `.d.ts` file
+  (for some arcane reason I can't understand),
+  so you need at least two separate `.d.ts` files if you
+  have both `declare module ...` and `export ...`.
 
 ## Exporting `.d.ts` files
 
-* Exporting type information with the package
+The last functionality that we have in TypeScript, and which we would like to duplicate using
+JSDoc typing, is the ability to generate an NPM package that also exposes its type definitions.
+Just like `slugify` does above. It's actually possible, and even easy. Let' start on the journey.
+
+First, we need to generate the `.d.ts` file that will contain all the type definitions we have.
+We'll run it in a `build` script, because that is what it is: building the definition files
+from source. This build script doesn't need to be run in development, but it does need to be
+run before we publish the package to NPM. This is how it will look like:
+
+```json
+  "scripts": {
+    "build": "tsc  --noEmit false --emitDeclarationOnly true",
+    "test": "tsc",
+    "start": "node src/jsdoc-typing.js"
+  }
+```
+
+We're adding two options when running `tsc` because we _do_ want to emit files (`--noEmit false`),
+but want to emit only `.d.ts` files (`--emitDeclarationOnly true`)
+
+But we need to tell it where to emit the `.d.ts` files, but we can do that in the `tsconfig.json`:
+
+```json
+{
+  "...": "",
+  "compilerOptions": {
+    "...": "",
+    "declarationDir": "types",
+    "declaration": true
+  }
+}
+```
+
+This tells "TypeScript" to omit the declarations to the `types` directory. We also need to make
+sure that when we publish this package, the `types` directory will also be published, so
+if you're enable-listing the files you publish by using `files` in `package.json`, don't forget
+to add the `types` directory there:
+
+```json
+{
+  "files ": ["src", "types"]
+}
+```
+
+And, while we're at it, we don't really want the `types` directory to be source controlled,
+because it's a file that generated by source code, so we add it to `.gitignore`:
+
+```txt
+# .gitignore
+node_modules
+types
+```
+
+Last thing we need to do before we publish this package, is add a property in the `package.json`
+that specifies where the root `.d.ts` file is, so that any package that `npm install`-s this package
+will know how to get at it's type definitions. So let's add the `"types"` field:
+
+```json
+{
+  "name": "jsdoc-typing-example",
+  "main": "./src/jsdoc-typing.js",
+  "types": "./types/jsdoc-typing.d.ts",
+```
+
+Just like you define the package's entry point using `main`, so you define your package's type
+definition entry point using `types`. And this `.d.ts` was generated using the `npm run build`
+script we created earlier, and with the help of the `tsconfig.json` properties we added
+which told it where to generate those type definition files.
+
+### One last fine tune
+
+Once we `npm publish` this package, we can use it in any JS (or TS) file, and it will enable
+code completion and typeching of the available exports:
+
+```js
+//@ts-check
+const example = require('jsdoc-typing-example')
+
+example.add('wrong-type', 4)
+        //  ~~~~~~~~~~~~
+ ```
+
+Mission accomplished!
+
+## Drawbacks
+
+Are there any drawbacks? Yes, of course there are. The four I can think of are:
+
+* The type definitions in JSDoc comments are sometimes clumsy and too verbose at times
+* You can't do everything with those type definitions, and while there is a solution for that
+  (using `.d.ts` files as described above), it feels like a kludge
+* The type casting syntax is *very* clumsy and is a wart on the code. And unlike
+  the JSDoc comments, it sits _right_ in your code
+* The community is
 
 ## Summary
+
+But, weighing the drawbacks, I still feel that this is a better solution than TypeScript
+transpiling.
+
+You can use JSDoc typing to do _everything_ you can do with TypeScript, but with pure JavaScript,
+using the ability of TypeScript to read type definitions encoded in JSDoc comments,
+and thus enable embedding type information in your JavaScript files,
+and using that type information to typecheck your JS files, as if they were TypeScript.
+
+So go ahead and use JSDoc typings: **all the benefits of TypeScript, without the drawbacks!**
+
+## References
+
+* Great documentation on JSDoc comments on the Typescript site: <https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html>
+* The Github repo with the sample code above, and a complete example of such a JSDoc package: <https://github.com/giltayar/jsdoc-typing>
+
+
