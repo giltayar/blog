@@ -1045,6 +1045,18 @@ which told it where to generate those type definition files.
 
 ### One last fine tune
 
+One last thing. Remember those `.d.ts` files? Especially `point-type.d.ts`, that includes
+additional TypeScript types? Well, it seems TypeScript forgot to copy them to the `types` director
+(is this a bug? I think it is), so we'll have to do it ourselves in our `build` script:
+
+```json
+  "scripts": {
+    "build": "tsc  --noEmit false --emitDeclarationOnly true && cp src/*.d.ts types",
+  }
+```
+
+### Publishing the package and using it's type definions
+
 Once we `npm publish` this package, we can use it in any JS (or TS) file, and it will enable
 code completion and typeching of the available exports:
 
