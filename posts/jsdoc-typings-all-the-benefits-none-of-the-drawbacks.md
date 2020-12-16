@@ -56,7 +56,7 @@ So I didn't very much like TypeScript's rise in popularity.
 It was like finally I found a nice comfortable dynamic language, and, well,
 just when I thought I was out, they pull me back in!
 
-![just when I thought I was out, they pull me back in](/img/they-pull-me-back-in.gif)
+![just when I thought I was out, they pull me back in](/img/they-pull-me-back-in.webp)
 
 TypeScript's gaining popularity was an affront to my belief that static typing is a scourge
 on the world of development and that everybody should move to dynamic typing! How
@@ -278,7 +278,7 @@ What will be the type of this variable? TypeScript does it's thing, and the type
 be `number`, because TypeScript knows how to automatically infer the type of the variable.
 To prove that it does, let's hover above the new variable:
 
-![implicit typing of variable](img/jsdoc-implicit-typing-of-variable.png)
+![implicit typing of variable](/img/jsdoc-implicit-typing-of-variable.png)
 
 This has nothing to do with JSDoc: it's TypeScript implicitly typing the variable to the correct
 type. But what if we wanted the type to be explicit? What if we wanted the JSDoc equivalent of this
