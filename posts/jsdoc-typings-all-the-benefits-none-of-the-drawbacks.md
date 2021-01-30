@@ -9,7 +9,7 @@ layout: layouts/post.njk
 ---
 <!-- markdownlint-disable MD029 -->
 
-(Hey, if you want to come work for me at Roundforest, and try out JSDoc typing, feel free to
+(Hey, if you want to come work with me at Roundforest, and try out JSDoc typing, feel free to
 find me on [LinkedIn](https://www.linkedin.com/in/giltayar/) or on Twitter (@giltayar))
 
 TypeScript! For me, it's a love-hate relationship.
