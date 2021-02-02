@@ -469,7 +469,7 @@ parameters. So let's fix that, and as long as we're there, let's define the retu
 /**
  * @param {string} name
  *
- * @returns {{firstName: string, lastName: string}}
+ * @returns { {firstName: string, lastName: string} }
  */
 function breakName(name) {
   const [first, ...rest] = name.split(' ')
@@ -479,8 +479,8 @@ function breakName(name) {
 ```
 
 We defined the `{firstName: string, lastName: string}` as a return value. As I said:
-you have the full power of Typescript at your disposal. Notice the double curly braces `{{'{{...'}}...{{'}'}}{{'}'}}`
-when defininig the return type. The outer curly braces are needed by JSDoc, whose syntax
+you have the full power of Typescript at your disposal. Notice the double curly braces `{{'{{'}}...{{'}'}}{{'}'}}`
+when defining the return type. The outer curly braces are needed by JSDoc, whose syntax
 forces us to surround all types with curly braces, and the inner curly braces are for the TypeScript
 type definition for an object.
 
@@ -490,7 +490,7 @@ the `@typedef` JSDoc:
 ```js
 /**
  *
- * @typedef {{firstName: string, lastName: string}} BrokenName
+ * @typedef { {firstName: string, lastName: string} } BrokenName
  */
 ```
 
@@ -941,7 +941,7 @@ Would be
 
 ```js
 /**
- * @typedef {{x: number, y: number}} Point
+ * @typedef { {x: number, y: number} } Point
 */
 ```
 
