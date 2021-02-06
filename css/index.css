@@ -27,6 +27,18 @@ p,
 img {
   max-width: 37.5em; /* 600px /16 */
 }
+@media (min-device-width: 768px) {
+  .tmpl-post p,
+  .tmpl-post li,
+  .tmpl-post img {
+    max-width: 738px; /* 600px /16 */
+  }
+  .tmpl-post {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+}
+
 h2 {
   width: 25em;
 }
@@ -64,8 +76,12 @@ table th {
 
 pre,
 code {
-  font-family: Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier, monospace;
+  font-family: SFMono-Regular, Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier, monospace;
   line-height: 1.5;
+  padding: .2em .4em;
+  background-color: rgba(27,31,35,0.05);
+  border-radius: 6px;
+  font-size: 85%;
 }
 pre {
   font-size: 14px;
@@ -169,6 +185,12 @@ pre {
 }
 .postlist-date {
   word-spacing: -0.5px;
+}
+
+main > .postlist-date {
+  display: block;
+  word-spacing: -0.5px;
+  padding-bottom: 1em;
 }
 .postlist-link {
   display: inline-block;

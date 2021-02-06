@@ -21,6 +21,14 @@ pre[class*="language-"] {
 	overflow: auto;
   max-width: 43em;
 }
+@media (min-device-width: 768px) {
+	pre[class*="language-"] {
+		margin: .5em 0;
+		overflow: auto;
+		max-width: 738px;
+	}
+	}
+
 :not(pre) > code[class*="language-"] {
 	padding: .1em;
 	border-radius: .3em;
