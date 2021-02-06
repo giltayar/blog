@@ -103,7 +103,7 @@ and if `exports` is defined in a CJS package, then no deep linking is allowed in
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/03-exports/test/tryout.js>
 
-Another importan benefit can be seen in `test/tryout.js`.
+Another important benefit can be seen in `test/tryout.js`.
 
 ```js
 // test/tryout.js
