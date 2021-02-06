@@ -26,14 +26,14 @@ This is part 2 of the guide for using JS modules in Node.js.
 
 - Part 1: the basics of JSM
 
-1. [The simplest Node.js JSM project](#section-01)
-2. [Using the `.js` extension for JSM](#section-02)
+1. [The simplest Node.js JSM project](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-01)
+2. [Using the `.js` extension for JSM](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-02)
 
 - Part 2 (this document): "exports" and its uses (including dual-mode libraries)
 
-3. [The `exports` field](../using-jsm-esm-in-nodejs-a-practical-guide-part-2/#section-03)
-4. [Multiple exports](../using-jsm-esm-in-nodejs-a-practical-guide-part-2/#section-04)
-5. [Dual-mode libraries](../using-jsm-esm-in-nodejs-a-practical-guide-part-2/#section-05)
+3. [The `exports` field](#section-03)
+4. [Multiple exports](#section-04)
+5. [Dual-mode libraries](#section-05)
 
 - Part 3: Tooling and Typescript
 
@@ -41,7 +41,7 @@ This is part 2 of the guide for using JS modules in Node.js.
 7. [TypeScript](../using-jsm-esm-in-nodejs-a-practical-guide-part-3/#section-07)
 
 This guide comes with a monorepo that has 7 directories, each directory being a package
-that demonstrates each facet of the Node.js support for JSM. You can find the monorepo
+that demonstrates the above sections. You can find the monorepo
 [here](https://github.com/giltayar/jsm-in-nodejs-guide).
 
 On to the next section, where we'll start looking at a new feature in Node.js: exports.
@@ -73,11 +73,11 @@ a package, is `src/main.js` (just like in the previous parts of the guide), and 
 defined by the field `main`.
 
 While you can use `main` to define the entry point, the correct JSM way to define the package
-entry point is a new field: `exports`. Note that in `exports`, the path MUST start with a `.`.
+entry point is a new field: `exports`. Note that in `exports`, the path MUST start with a "`.`".
 This makes sense, as it is the same path you would use to `import` the file. If you're using
-`main`, you don't need the `.`, but the exports field mandates it.
+`main`, you don't need the "`.`", but the exports field mandates it.
 
-Using `exports`, you define the entry point (in the above case `.`), and what that entry point
+Using `exports`, you define the entry point (in the above case "`.`"), and what that entry point
 points to: `./src/main.js`. It looks very verbose, but we'll see why this syntax is this way
 shortly.
 
@@ -86,28 +86,28 @@ Why use `exports` if `main` is enough? Looks the same, right? Well, it's close, 
 i.e. if the package was published, another package could import it by using
 
 ```js
-import { banner } from "01-simplest-mjs";
+import {banner} from "01-simplest-mjs"
 ```
 
-But wouldn't be abel to do this
+But wouldn't be able to do this (they'll get an error)
 
 ```js
-import { banner } from "01-simplest-mjs/src/main.mjs";
+import {banner} from "01-simplest-mjs/src/main.mjs"
 ```
 
-An interesting to note about `exports`, is that this is actually not a JSM feature.
-It is a Node.js feature and is also available in CJS! So if `exports` is defined in a CJS package,
-then no deep linking is allowed in CJS too.
+An interesting thing to note about `exports`, is that this is actually not a JSM feature.
+It is a Node.js feature and is also available for CJS! So `exports` works in CJS packages,
+and if `exports` is defined in a CJS package, then no deep linking is allowed in CJS too.
 
 ### Self-referencing the package
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/03-exports/test/tryout.js>
 
-Another importan benefit can be seen in `test/tryout.js` in this package
+Another importan benefit can be seen in `test/tryout.js`.
 
 ```js
 // test/tryout.js
-import { banner } from "03-exports"
+import {banner} from '03-exports'
 ```
 
 This is code from the existing package, yet it can self-reference itself using the name of
@@ -161,7 +161,7 @@ Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/04-multiple-exp
 ```
 
 In the above, we can see four entry points: the main one (`04-mutiple-exports`),
-the read and blue ones (`04-multiple-exports/red` and `04-multiple-exports/blue`),
+the red and blue ones (`04-multiple-exports/red` and `04-multiple-exports/blue`),
 and the "package.json" one (`04-multiple-exports/package.json`).
 This is a nice way to define multiple entry points to a package, and as we've already seen,
 still "hides" the other implementation modules from the outside.
@@ -174,9 +174,9 @@ Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/04-multiple-exp
 
 ```js
 // test/trout.js
-import { banner as whiteBanner } from "04-multiple-exports";
-import { banner as redBanner } from "04-multiple-exports/red";
-import { banner as blueBanner } from "04-multiple-exports/blue";
+import {banner as whiteBanner} from "04-multiple-exports"
+import {banner as redBanner} from "04-multiple-exports/red"
+import {banner as blueBanner} from "04-multiple-exports/blue"
 ```
 
 As you can see, we can self-reference the entry points in the module itself, and thus
@@ -191,18 +191,18 @@ are able to test the module entry points.
 
 Companion code: <https://github.com/giltayar/jsm-in-nodejs-guide/tree/main/05-dual-mode-library>
 
-Up to now, we created JSM code that was exported as an JSM package. So if another JSM
-package `npm install`-ed this one, then it could use it without a problem (using `import`).
-But if a CJS package `npm install`-ed it, it would be difficult to use, because we are not allowed
-to `require` an JSM package, and the only way to use it would be using `await import(...)`,
-which is problematic because it is an async operation, which can only be used in an async manner.
+Up to now, we created JSM code that was exported as a JSM package. So if another JSM
+package "`npm install`"-ed this one, then it could use it without a problem (using "`import`").
+But if a CJS package "`npm install`"-ed it, it would be difficult to use, because we are not allowed
+to "`require`" a JSM package, and the only way to use it would be using "`await import(...)`",
+which is problematic because it is an async operation, which can only be used in an async function.
 
 Why does this limitation exist? Because CJS is a synchronous module system,
 and JSM is asyncronous, the only way to import JSM from CJS is using an asynchronous operation,
-`await import(...)`.
+"`await import(...)`".
 
 But what if we could create a module that can be both `import`-ed and `require`-ed? If it is
-`import`-ed, it uses JSM code, and if it is `require`-ed, it uses CJS code.
+"`import`"-ed, it uses JSM code, and if it is "`require`"-ed, it uses CJS code.
 
 We can! And again, we use the incredible `exports` field, and its ability to do
 "conditional exports". Let's look at the `package.json` of this package.
@@ -238,9 +238,11 @@ CJS (using `require` everywhere) and one for JSM (using `import` everywhere)? Th
 a bit too much, I think.
 
 One simple way out of this conundrum, is to write the package using CJS, and then write
-a small JSM wrapper. That's a great solution, but leaves us with the fact that the bulk of the
-code is CJS! And this is a guide on how to write JSM code. So is there a way to continue writing
-JSM code, and yet still have a parallel CJS entry point?
+a small JSM wrapper that "`require`"-s the code end "`export`"-s it as JSM.
+That's a great solution, and works well for existing packages that are
+CJS: they can wrap their code with a JSM wrapper, define the conditions like above, and voila:
+they're dual-mode! But if we're using JSM, this is not an option for us.
+So is there a way to continue writing JSM code, and yet still have a parallel CJS entry point?
 
 Yes, there is. We do what our ancestors did: we transpile. 😎 For this,
 I'm going to use [Rollup](https://rollupjs.org/). Rollup is great because it understands
@@ -267,7 +269,7 @@ Now let's see how we configure Rollup to transpile our code.
 
 ### Transpiling JSM to CJS using Rollup
 
-Remember, the code is in `src/*.js` and we want to transpile to CJS code in `lib/*.js`
+Remember, the code is in `src/*.js` and we want to transpile to CJS code in `lib/*.js`.
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/05-dual-mode-library/rollup.config.mjs>
 
@@ -305,7 +307,7 @@ And what is that `preserveModules: true`? This forcs Rollup to create a module f
 in the input, instead of trying to chunk them together.
 
 And that's it, we just need to run Rollup, and not to forget to copy the other assets also
-to lib:
+to lib.
 
 ### Build script
 
@@ -321,6 +323,7 @@ Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/05-dual-mode-li
 ### Testing the code
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/05-dual-mode-library/test/tryout.js>
+
 And: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/05-dual-mode-library/test/tryout.cjs>
 
 To test the code, we first `npm run build` to generate the CJS code,
@@ -343,5 +346,5 @@ const {banner} = require('05-dual-mode-library')
 Each one will find the correct entry point using the conditional export, and all will be well.
 
 OK, cool. We're done with the basics of JSM in Node.js. Now for the tooling: using things
-like ESLint, test runners, and mocks. Let's dig deep. You can find that in the next
+like ESLint, test runners, and mocks. You can find that in the next
 part, [here](../using-jsm-esm-in-nodejs-a-practical-guide-part-3/).

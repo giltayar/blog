@@ -16,6 +16,7 @@ layout: layouts/post.njk
 
 <!-- markdownlint-disable MD029 -->
 <!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD028 -->
 
 ![JSM Logo](/img/jsm-logo.png)
 
@@ -26,8 +27,8 @@ This is part 3 of the guide for using JS modules in Node.js.
 
 - Part 1: the basics of JSM
 
-1. [The simplest Node.js JSM project](#section-01)
-2. [Using the `.js` extension for JSM](#section-02)
+1. [The simplest Node.js JSM project](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-01)
+2. [Using the `.js` extension for JSM](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-02)
 
 - Part 2: "exports" and its uses (including dual-mode libraries)
 
@@ -37,14 +38,14 @@ This is part 3 of the guide for using JS modules in Node.js.
 
 - Part 3 (this document): Tooling and Typescript
 
-6. [Tooling](../using-jsm-esm-in-nodejs-a-practical-guide-part-3/#section-06)
-7. [TypeScript](../using-jsm-esm-in-nodejs-a-practical-guide-part-3/#section-07)
+6. [Tooling](#section-06)
+7. [TypeScript](#section-07)
 
 This guide comes with a monorepo that has 7 directories, each directory being a package
-that demonstrates each facet of the Node.js support for JSM. You can find the monorepo
+that demonstrates the above sections. You can find the monorepo
 [here](https://github.com/giltayar/jsm-in-nodejs-guide).
 
-In this part we see how to integrate tools like ESlint, Mocha/Chai, Testdouble,
+In this third and final part we see how to integrate tools like ESlint, Mocha/Chai, Testdouble,
 and TypeScript.
 
 ## <a id="section-06"></a>Tooling
@@ -61,7 +62,8 @@ support for:
 
 > **Gotcha**: as I said in the introduction, all major test runners today support JSM,
   except for Jest that only has experimental support.
-  **Gotcha**: the only mocking library that supports mocking JSM modules is currently
+
+> **Gotcha**: the only mocking library that supports mocking JSM modules is currently
   TestDouble.
 
 Let's start exploring the package, tool by tool. We'll start with the most important of them,
@@ -140,10 +142,12 @@ which shows you that things _are_ progressing! On to the next tools, Mocha and C
 
 ## Mocha and Chai
 
-Mocha was actually the first test runner to support JSM (support written by yours truly 😊),
-and it now also supports `--require` that loads JSM code too. So write your test files using JSM
-with no problem. The _only_ problem is a minor one, for Mocha: it is a
-CommonJS packages, and has no JSM wrapper, and so importing it is a two step process.
+Mocha was actually the first test runner to support JSM (support written by yours truly 😊).
+So write your test files using JSM with no problem. The _only_ problem is a minor one,
+for Mocha: it is a CommonJS packages, and has no JSM wrapper,
+and so importing it is a two step process: the first line imports the default import, and the
+second line deconstructs the test functions `describe` and `it`. Note that most people tend
+to never import `mocha` so that shouldn't even be a problem for them.
 
 ```js
 // test/test.js
@@ -152,12 +156,13 @@ const {describe, it} = mocha
 import {expect} from "chai"
 ```
 
-Funnily enough, this was also true for Chai, but a new version that dealt with this was
-released _while I was writing this guide_. There's a pull request in Mocha to add a JSM wrapper,
+There's a pull request in Mocha to add a JSM wrapper,
 so it's just a matter of time till this problem is als solved for Mocha too.
+Funnily enough, this problem also existed for Chai, but a new version that dealt with this was
+released _while I was writing this guide_.
 
 Moreover, in terms of JSM support, I've seen more and more packages adding JSM wrappers to enable
-named imports, and it feels like the community is rallying around support for JSM in Node.js
+named imports, and it feels like the community is rallying around support for JSM in Node.js.
 
 ## Mocking imports using Testdouble
 
@@ -165,7 +170,7 @@ What do I mean by "mocking imports"? It's the ability to mock a module so that w
 it, you don't get the real module, but rather a mock of the module.
 
 The only module mocking library that currently supports JSM is
-[testdouble.js](https://www.npmjs.com/package/testdouble)
+[Testdouble](https://www.npmjs.com/package/testdouble)
 (whose support was also written by yours truly 😊), so if you do module mocking
 using libraries such as [proxyquire](https://www.npmjs.com/package/proxyquire) then you're out
 of luck.
@@ -176,18 +181,18 @@ of luck.
 
 Testdouble, and other mocking libraries in the future, use a JSM-only feature called
 [loaders](https://nodejs.org/api/esm.html#esm_loaders) that enable a module to hook into the
-JS module loading process. Unfortunately, for a module to be a loader, it needs to be declared
-as such in the command line. Which is why we run Mocha thus:
+JS module loading process. For a module to be a loader, it needs to be declared
+as such in the command line. Which is why we need to run Mocha thus:
 
 ```shell
 mocha --loader=testdouble test/test.js ...
 ```
 
-(and get a scary looking "loaders are experimental" kind of a warning. Because, well,
+(and get a scary looking "loaders are experimental" warning. Because, well,
 they _are_ experimental and not yet stable! Fortunately, Testdouble shields you from the instability
 of the API, and will probably support any changes in the loader api that are forthcoming.)
 
-Now, to use mocking, you can just use the appropriate Testdouble functin, `td.replaceEsm`.
+Now, to use mocking, you can just use the appropriate Testdouble function, `td.replaceEsm`.
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/06-tooling/test/test.js>
 
@@ -198,15 +203,14 @@ td.replaceEsm("../src/add.js", { add: () => 44 })
 
 And it will replace the `add` function in `add.js` with the above mock. Simple and efficient.
 
-That's it for tooling. There's just one more (very important!) tool missing in our toolbox, but
-that is covered in the next section.
+That's it for tooling. There's just one more (very important!) tool missing in our toolbox....
 
 ## <a id="section-07"></a>TypeScript
 
 Companion code: <https://github.com/giltayar/jsm-in-nodejs-guide/tree/main/07-typescript>
 
-I gave a talk last year, and said that TypeScript wasn't yet ready for transpiling to Node.js
-JSM. Not sure what changed, but it's definitely ready now. Let's first look at the `tsconfig.json`.
+I gave a talk last year, and said that TypeScript wasn't yet ready for JSM in Node.js.
+Not sure what changed, but it's definitely ready now. Let's first look at the `tsconfig.json`.
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/07-typescript/tsconfig.json>
 
@@ -225,11 +229,12 @@ Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/07-typescript/t
 }
 ```
 
-All the above options are nexessary to make TypeScript transpile the code
+All the above options are necessary to make TypeScript transpile the code
 and keep the `import` so that they work with JSM.
 There's just one gotcha, and it's not even a gotcha, _as this is by design_:
-because JSM in Node.js needs to write relative paths with extensions, you must write the extensions
-in TypeScript too, _and they have to be `.mjs` or `.js`_! Let's look at how this looks in the code.
+because JSM in Node.js needs to write relative paths with extensions, you must write the
+file extensions in TypeScript too, _and they have to be `.mjs` or `.js`_!
+Let's look at how this looks in the code.
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/07-typescript/src/banner-in-color.ts>
 
@@ -241,10 +246,10 @@ import {add} from "./add.js"
 Even though `add.ts` is a TypeScript file, we still write `./add.js` and not `./add.ts`. This is
 by design of TypeScript and is not a bug. Weird, though, right?
 
-So just remember this weirdness, modify your `tsconfig.json` and start transpiling your TypeScript
-code to JSM! 🎉🎉🎉🎉
-
-Just don't forget that the main entry point is now in the `lib` directory
+So just remember this weirdness when you're importing files,
+modify your `tsconfig.json` and start transpiling your TypeScript
+code to JSM! Just don't forget that the main entry point is now in the `lib` directory that
+contains the transpiled code.
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/07-typescript/package.json>
 
@@ -259,7 +264,7 @@ Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/07-typescript/p
 ### Bonus: using JSDoc typings with JSM
 
 Given that I wrote a whole
-[blog post on JSDoc typings](./jsdoc-typings-all-the-benefits-none-of-the-drawbacks),
+[blog post on JSDoc typings](../jsdoc-typings-all-the-benefits-none-of-the-drawbacks),
 I would be amiss if I didn't say that JSDoc typings also work well, with the same `tsconfig.json`
 (just don't forget to turn on `allowJS` and `checkJS`). You can see an example project that
 uses JSDoc typings and JSM in
@@ -276,5 +281,5 @@ This guide is over. I've shown:
 Hope you enjoyed this guide!
 
 By the way, I'm sure you're using tools that I haven't covered.
-I'd love to hear about them and if there were any JSM gotchas or tuning to do to support it.
+I'd love to hear about them and if there were any JSM gotchas or configurations to do to support it.
 Drop me a Twitter DM at @giltayar: I'd love to add the information to this document.

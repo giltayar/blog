@@ -122,7 +122,7 @@ and other goodies, which I didn't get before in the CJS world.
 7. [TypeScript](../using-jsm-esm-in-nodejs-a-practical-guide-part-3/#section-07)
 
 This guide comes with a monorepo that has 7 directories, each directory being a package
-that demonstrates each facet of the Node.js support for JSM. You can find the monorepo
+that demonstrates the above sections of the Node.js support for JSM. You can find the monorepo
 [here](https://github.com/giltayar/jsm-in-nodejs-guide).
 
 ## <a id="section-01"></a>The simplest Node.js JSM project
