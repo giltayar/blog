@@ -56,11 +56,11 @@ stil be with us for a very very long time. The module syntax is this:
 ```js
 // add.js
 export function add(a, b) {
-  return a + b;
+  return a + b
 }
 
 // main.js
-import { add } from "./add.js";
+import { add } from "./add.js"
 ```
 
 (An intro to JSM is out of scope of this guide, but you can find it _everywhere_ today on the
@@ -145,12 +145,12 @@ Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/01-simplest-mjs
 }
 ```
 
-The main entry point is `src/main.mjs`. Why do we use the `.mjs` extension? Because in Node.s
-JSM, the `.js` extension is reserved for CJS and `.mjs` means that this is a JS module
-(in the next section, we'll see how to change that). We'll takl a bit more about that in the next
+The main entry point is `src/main.mjs`. Why does the file use the `.mjs` extension? Because in
+Node.js JSM, the `.js` extension is reserved for CJS and `.mjs` means that this is a JS module
+(in the next section, we'll see how to change that). We'll talk a bit more about that in the next
 part.
 
-Let's continue exploring with `main.mjs`:
+Let's continue exploring `main.mjs`.
 
 ### Importing using extensions
 
@@ -158,15 +158,17 @@ Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/01-simplest-mjs
 
 ```js
 // src/main.mjs
-import { bannerInColor } from "./banner-in-color.mjs";
+import {bannerInColor} from "./banner-in-color.mjs"
 
 export function banner() {
-  return bannerInColor("white");
+  return bannerInColor("white")
 }
 ```
 
+Look at the import statement that imports `banner-in-color`:
 Node.js JSM _forces_ you to specify the full relative path to the file, _including the extension_.
-The reason they did this is to be compatible with Browser JSM that also forces you do to this. So
+The reason they did this is to be compatible with Browser JSM (when using JSM in browsers,
+you always specify the full name of the file, including the extension). So
 don't forget that extension! (You can understand more about this in my
 [talk at Node.TLV](https://www.youtube.com/watch?v=kK_3OP0uJ0Y))
 
@@ -177,7 +179,8 @@ and its built in intellisense doesn't work on it.
 > the next section we'll see how to deal with that, so it's not a _real_ gotcha.
 
 This `main.mjs` exports the `banner` function, which will be tested in `test/tryout.mjs`. But
-first, let's explore `banner-in-color.mjs`, which contains most of the implementation of `banner()`:
+first, let's explore `banner-in-color.mjs`, which contains most of the implementation of
+the `banner()` function.
 
 ### Importing JSM and CJS paclages
 
@@ -187,9 +190,9 @@ We've seen how we can import JSM modules. Let's see how to import other packages
 
 ```js
 // src/banner-in-color.mjs
-import { join } from "path";
-import chalk from "chalk";
-const { underline } = chalk;
+import {join} from "path"
+import chalk from "chalk"
+const {underline} = chalk
 ```
 
 We can import Node.js internal packages like `path` easily, because Node.js
@@ -202,36 +205,39 @@ when importing CJS modules, you can only use "default" importing, and not "named
 while you can import named imports in a CJS file:
 
 ```js
-const { underline } = require("chalk");
+// -a-cjs-file.cjs
+const {underline} = require("chalk")
 ```
 
 You _cannot_ do this in a JSM file:
 
 ```js
-import {underline} from 'chalk`
+// -a-jsm-file.mjs
+import {underline} from 'chalk'
 ```
 
 You can only import the default (non-named) import, and use destructuring later:
 
 ```js
-import chalk from "chalk";
-const { underline } = chalk;
+import chalk from "chalk"
+const {underline} = chalk
 ```
 
-Why is this? It's complicated, but the gist of it is that JSM does not allow _executing_ a
-module to determine what the exports are, and so the exports need to be determined statically.
+Why is this? It's complicated, but the gist of it is that when loading modules,
+JSM does not allow _executing_ a module to determine what the exports are,
+and so the exports need to be determined statically.
 Unfortunately, in CJS, executing a module is the only reliable way of determining
 what the exports are. Node.js actually tries very hard to figure out what the named exports are
 (by parsing the module using a very fast parser),
-but my experience is that most packages I've tried this with don't really work,
+but my experience is this method doesn't work for most packages that I've tried this with,
 and I need to fall back to default importing.
 
-> **Gotcha**: importing a CJS module is easy, but you can't use named imports and need
-> to add a second line to destructure out the named imports.
+> **Gotcha**: importing a CJS module is easy, but you mostly can't use named imports and need
+  to add a second line to destructure out the named imports.
 
 I believe that in 2021, more and more packages will have JSM entry points that export
-themselves as JSM with the proper named exports. But for now, you may need the double lines
-to use CJS pacakges.
+themselves as JSM with the proper named exports. But for now, you may need the additional
+destructuring to use named imports from CJS pacakges.
 
 ### Top-level await
 
@@ -242,7 +248,7 @@ that reads a file from the disk:
 
 ```js
 // src/banner-in-color.mjs
-const text = await fs.readFile(join(__dirname, "text.txt"), "utf8");
+const text = await fs.readFile(join(__dirname, "text.txt"), "utf8")
 ```
 
 Why so extraordinary? Because of that `await`. This is an `await` that is outside an `async`
@@ -261,21 +267,21 @@ But notice the use of `__dirname` in the line above. Let's discuss that.
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/01-simplest-mjs/src/banner-in-color.mjs>
 
 If you try to use `__dirname` in JSM, you will find that it is not available
-(just like `__filename`). But if you need it, you can quickly find it using these lines:
+(just like `__filename`). But if you need it, you can quickly determine it using these lines:
 
 ```js
 // src/banner-in-color.mjs
-import url from "url";
+import url from "url"
 
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url))
 ```
 
-Complex? Yes. Let's deconstruct this code to understand it.
+Complex? Yes. So let's deconstruct this code to understand it.
 
 First off, the expression `import.meta.url` is part of the JSM spec, and its purpose
 is the same as the CJS `__filename`, except that it's a _URL_ and not a file path.
 Why URL-s? Because JSM is defined in terms of URLs and not file paths (to be browser-compatible).
-BTW, the URL we get is not an HTTP URL. It's a `file://...` URL.
+BTW, the URL we get is not an HTTP URL. It's a "`file://...`" URL.
 
 Now that we have the URL of the current file, we need the parent URL to get at the directory,
 and we use `new URL('.', import.meta.url)` to get at it
@@ -312,15 +318,15 @@ npm install
 npm test
 ```
 
-Yes! We've written our first JSM package! Now let's do the same, but with a `.js` extension?
+Yes! We've written our first JSM package! Now let's do the same, but with a `.js` extension!
 
 ## <a id="section-02"/></a>Using the `.js` extension for JSM
 
 Companion code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/02-simplest-js>
 
-As we saw in the previous section, the `.mjs` extension is problematic.
-We want our `.js` extension back, and that is what we will do in this section, with a very
-simple change to `package.json`:
+As we saw in the previous section, the `.mjs` extension is problematic, because tooling still
+doesn't fully support it well. We want our `.js` extension back,
+and that is what we will do in this section, with a very simple change to `package.json`.
 
 ### `type: module`
 
@@ -343,16 +349,16 @@ all `.js` files will be interpreted as JSM, so your whole code can now use the `
 You can still use `.mjs` and it wil always be JSM. Moreover, if you need a CJS module in your code,
 you can use the new `.cjs` extension (we'll see how we use that in the "dual mode library" section).
 
-That's it. The rest of the code in this directort uses `.js`, and when importing, also uses the
+That's it. The rest of the code in this directory uses `.js`, and when importing, also uses the
 `.js` extension:
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/02-simplest-js/src/main.js>
 
 ```js
 // src/main.js
-import { bannerInColor } from "./banner-in-color.js";
+import {bannerInColor} from "./banner-in-color.js"
 ```
 
 That's it for the basics. On to the
-[next part]((../using-jsm-esm-in-nodejs-a-practical-guide-part-2/)) of this guide,
+[next part](../using-jsm-esm-in-nodejs-a-practical-guide-part-2/) of this guide,
 where we learn about an important feature of JSM: `exports`.
