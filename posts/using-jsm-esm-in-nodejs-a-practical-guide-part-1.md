@@ -318,7 +318,6 @@ Yes! We've written our first JSM package! Now let's do the same, but with a `.js
 
 Companion code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/02-simplest-js>
 
-
 As we saw in the previous section, the `.mjs` extension is problematic.
 We want our `.js` extension back, and that is what we will do in this section, with a very
 simple change to `package.json`:

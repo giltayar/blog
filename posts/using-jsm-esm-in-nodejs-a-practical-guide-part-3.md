@@ -262,7 +262,8 @@ Given that I wrote a whole
 [blog post on JSDoc typings](./jsdoc-typings-all-the-benefits-none-of-the-drawbacks),
 I would be amiss if I didn't say that JSDoc typings also work well, with the same `tsconfig.json`
 (just don't forget to turn on `allowJS` and `checkJS`). You can see an example project that
-uses JSDoc typings and JSM in "08-jsdoc-typing"(https://github.com/giltayar/jsm-in-nodejs-guide/tree/main/08-jsdoc-typing).
+uses JSDoc typings and JSM in
+["08-jsdoc-typing"](https://github.com/giltayar/jsm-in-nodejs-guide/tree/main/08-jsdoc-typing).
 
 ## Summary
 
