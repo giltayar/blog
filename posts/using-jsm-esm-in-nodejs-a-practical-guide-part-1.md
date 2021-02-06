@@ -182,7 +182,7 @@ This `main.mjs` exports the `banner` function, which will be tested in `test/try
 first, let's explore `banner-in-color.mjs`, which contains most of the implementation of
 the `banner()` function.
 
-### Importing JSM and CJS paclages
+### Importing JSM and CJS packages
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/01-simplest-mjs/src/banner-in-color.mjs>
 
