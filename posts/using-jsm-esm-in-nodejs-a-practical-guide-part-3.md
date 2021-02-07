@@ -1,14 +1,14 @@
 ---
-title: "Using JS Modules (ESM) in Node.js: A Practical Guide (Part 3)"
+title: "Using ES Modules (ESM) in Node.js: A Practical Guide (Part 3)"
 description: |
-  JSM (formerly ESM) is ready for use in Node.js.
+  ESM is ready for use in Node.js.
   This guide shows you how, and how to avoid all the small gotchas.
   The guide covers the basics, but also discusses how to write packages that
-  can be dual-mode (JSM and CJS), how to configure ESLint, Mocha, and Testdouble, and how
-  to use TypeScript with JSM.
+  can be dual-mode (ESM and CJS), how to configure ESLint, Mocha, and Testdouble, and how
+  to use TypeScript with ESM.
 date: 2021-02-07
 tags:
-  - JSM
+  - ESM
   - JavaScript
   - Node.js
 layout: layouts/post.njk
@@ -18,17 +18,17 @@ layout: layouts/post.njk
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD028 -->
 
-![JSM Logo](/img/jsm-logo.png)
+![ESM Logo](/img/jsm-logo.png)
 
-(Hey, if you want to come work with me at Roundforest, and try out JSM on Node.js, feel free to
+(Hey, if you want to come work with me at Roundforest, and try out ESM on Node.js, feel free to
 find me on [LinkedIn](https://www.linkedin.com/in/giltayar/) or on Twitter (@giltayar))
 
-This is part 3 of the guide for using JS modules in Node.js.
+This is part 3 of the guide for using ES modules in Node.js.
 
-- Part 1: the basics of JSM
+- Part 1: the basics of ESM
 
-1. [The simplest Node.js JSM project](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-01)
-2. [Using the `.js` extension for JSM](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-02)
+1. [The simplest Node.js ESM project](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-01)
+2. [Using the `.js` extension for ESM](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-02)
 
 - Part 2: "exports" and its uses (including dual-mode libraries)
 
@@ -60,18 +60,18 @@ support for:
 - Mocha and Chai for testing
 - [Testdouble](https://www.npmjs.com/package/testdouble) for module mocking
 
-> **Gotcha**: as I said in the introduction, all major test runners today support JSM,
+> **Gotcha**: as I said in the introduction, all major test runners today support ESM,
   except for Jest that only has experimental support.
 
-> **Gotcha**: the only mocking library that supports mocking JSM modules is currently
+> **Gotcha**: the only mocking library that supports mocking ESM modules is currently
   TestDouble.
 
 Let's start exploring the package, tool by tool. We'll start with the most important of them,
 ESLint.
 
-### ESlint configuration for Node.js JSM
+### ESlint configuration for Node.js ESM
 
-ESlint already supports JSM well because a lot of code is already using JSM via Babel or TypeScript.
+ESlint already supports ESM well because a lot of code is already using ESM via Babel or TypeScript.
 But there is one aspect it doesn't yet support, and that is top-level await. If you're not using
 top-level await, then just go ahead and use whatever ESLint configuration you already have. Just
 don't forget to use `sourceType: "module"`.
@@ -124,7 +124,7 @@ plugin that knows how to parse top-level await. And all is well.
 
 Well, almost. There is a much used plugin for ESlint, the
 [Node.js ESLint plugin](https://www.npmjs.com/package/eslint-plugin-node) that supports
-linting Node code. And it supports JSM out of the box! And pretty well. Unfortunately, it currently
+linting Node code. And it supports ESM out of the box! And pretty well. Unfortunately, it currently
 (February 2021) has a bug where it thinks Node.js doesn't support `await import(...)`, and
 the only workaround I could find was to disable the error in the eslint configuration:
 
@@ -142,9 +142,9 @@ which shows you that things _are_ progressing! On to the next tools, Mocha and C
 
 ## Mocha and Chai
 
-Mocha was actually the first test runner to support JSM (support written by yours truly 😊).
-So write your test files using JSM with no problem. The _only_ problem is a minor one,
-for Mocha: it is a CommonJS packages, and has no JSM wrapper,
+Mocha was actually the first test runner to support ESM (support written by yours truly 😊).
+So write your test files using ESM with no problem. The _only_ problem is a minor one,
+for Mocha: it is a CommonJS packages, and has no ESM wrapper,
 and so importing it is a two step process: the first line imports the default import, and the
 second line deconstructs the test functions `describe` and `it`. Note that most people tend
 to never import `mocha` so that shouldn't even be a problem for them.
@@ -156,32 +156,32 @@ const {describe, it} = mocha
 import {expect} from "chai"
 ```
 
-There's a pull request in Mocha to add a JSM wrapper,
+There's a pull request in Mocha to add a ESM wrapper,
 so it's just a matter of time till this problem is als solved for Mocha too.
 Funnily enough, this problem also existed for Chai, but a new version that dealt with this was
 released _while I was writing this guide_.
 
-Moreover, in terms of JSM support, I've seen more and more packages adding JSM wrappers to enable
-named imports, and it feels like the community is rallying around support for JSM in Node.js.
+Moreover, in terms of ESM support, I've seen more and more packages adding ESM wrappers to enable
+named imports, and it feels like the community is rallying around support for ESM in Node.js.
 
 ## Mocking imports using Testdouble
 
 What do I mean by "mocking imports"? It's the ability to mock a module so that when you `import`
 it, you don't get the real module, but rather a mock of the module.
 
-The only module mocking library that currently supports JSM is
+The only module mocking library that currently supports ESM is
 [Testdouble](https://www.npmjs.com/package/testdouble)
 (whose support was also written by yours truly 😊), so if you do module mocking
 using libraries such as [proxyquire](https://www.npmjs.com/package/proxyquire) then you're out
 of luck.
 
-> **Gotcha**: currently, the only library that supports mocking JSM modules is Testdouble.
+> **Gotcha**: currently, the only library that supports mocking ESM modules is Testdouble.
   Note that regular function mocking has no problems in any library, as it is not done with
-  modules, so you can use regular mocking library (like Sinon) in JSM without any problem.
+  modules, so you can use regular mocking library (like Sinon) in ESM without any problem.
 
-Testdouble, and other mocking libraries in the future, use a JSM-only feature called
+Testdouble, and other mocking libraries in the future, use a ESM-only feature called
 [loaders](https://nodejs.org/api/esm.html#esm_loaders) that enable a module to hook into the
-JS module loading process. For a module to be a loader, it needs to be declared
+ES module loading process. For a module to be a loader, it needs to be declared
 as such in the command line. Which is why we need to run Mocha thus:
 
 ```shell
@@ -209,7 +209,7 @@ That's it for tooling. There's just one more (very important!) tool missing in o
 
 Companion code: <https://github.com/giltayar/jsm-in-nodejs-guide/tree/main/07-typescript>
 
-I gave a talk last year, and said that TypeScript wasn't yet ready for JSM in Node.js.
+I gave a talk last year, and said that TypeScript wasn't yet ready for ESM in Node.js.
 Not sure what changed, but it's definitely ready now. Let's first look at the `tsconfig.json`.
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/07-typescript/tsconfig.json>
@@ -230,9 +230,9 @@ Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/07-typescript/t
 ```
 
 All the above options are necessary to make TypeScript transpile the code
-and keep the `import` so that they work with JSM.
+and keep the `import` so that they work with ESM.
 There's just one gotcha, and it's not even a gotcha, _as this is by design_:
-because JSM in Node.js needs to write relative paths with extensions, you must write the
+because ESM in Node.js needs to write relative paths with extensions, you must write the
 file extensions in TypeScript too, _and they have to be `.mjs` or `.js`_!
 Let's look at how this looks in the code.
 
@@ -248,7 +248,7 @@ by design of TypeScript and is not a bug. Weird, though, right?
 
 So just remember this weirdness when you're importing files,
 modify your `tsconfig.json` and start transpiling your TypeScript
-code to JSM! Just don't forget that the main entry point is now in the `lib` directory that
+code to ESM! Just don't forget that the main entry point is now in the `lib` directory that
 contains the transpiled code.
 
 Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/07-typescript/package.json>
@@ -261,25 +261,25 @@ Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/07-typescript/p
 }
 ```
 
-### Bonus: using JSDoc typings with JSM
+### Bonus: using JSDoc typings with ESM
 
 Given that I wrote a whole
 [blog post on JSDoc typings](../jsdoc-typings-all-the-benefits-none-of-the-drawbacks),
 I would be amiss if I didn't say that JSDoc typings also work well, with the same `tsconfig.json`
 (just don't forget to turn on `allowJS` and `checkJS`). You can see an example project that
-uses JSDoc typings and JSM in
+uses JSDoc typings and ESM in
 ["08-jsdoc-typing"](https://github.com/giltayar/jsm-in-nodejs-guide/tree/main/08-jsdoc-typing).
 
 ## Summary
 
 This guide is over. I've shown:
 
-- How to use JSM in Node.js
-- How to configure your projects and tools to support JSM
+- How to use ESM in Node.js
+- How to configure your projects and tools to support ESM
 - Some of the gotchas around this
 
 Hope you enjoyed this guide!
 
 By the way, I'm sure you're using tools that I haven't covered.
-I'd love to hear about them and if there were any JSM gotchas or configurations to do to support it.
+I'd love to hear about them and if there were any ESM gotchas or configurations to do to support it.
 Drop me a Twitter DM at @giltayar: I'd love to add the information to this document.

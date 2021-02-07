@@ -1,14 +1,14 @@
 ---
-title: "Using JS Modules (ESM) in Node.js: A Practical Guide (Part 2)"
+title: "Using ES Modules (ESM) in Node.js: A Practical Guide (Part 2)"
 description: |
-  JSM (formerly ESM) is ready for use in Node.js.
+  ESM is ready for use in Node.js.
   This guide shows you how, and how to avoid all the small gotchas.
   The guide covers the basics, but also discusses how to write packages that
-  can be dual-mode (JSM and CJS), how to configure ESLint, Mocha, and Testdouble, and how
-  to use TypeScript with JSM.
+  can be dual-mode (ESM and CJS), how to configure ESLint, Mocha, and Testdouble, and how
+  to use TypeScript with ESM.
 date: 2021-02-06
 tags:
-  - JSM
+  - ESM
   - JavaScript
   - Node.js
 layout: layouts/post.njk
@@ -17,17 +17,17 @@ layout: layouts/post.njk
 <!-- markdownlint-disable MD029 -->
 <!-- markdownlint-disable MD033 -->
 
-![JSM Logo](/img/jsm-logo.png)
+![ESM Logo](/img/jsm-logo.png)
 
-(Hey, if you want to come work with me at Roundforest, and try out JSM on Node.js, feel free to
+(Hey, if you want to come work with me at Roundforest, and try out ESM on Node.js, feel free to
 find me on [LinkedIn](https://www.linkedin.com/in/giltayar/) or on Twitter (@giltayar))
 
-This is part 2 of the guide for using JS modules in Node.js.
+This is part 2 of the guide for using ES modules in Node.js.
 
-- Part 1: the basics of JSM
+- Part 1: the basics of ESM
 
-1. [The simplest Node.js JSM project](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-01)
-2. [Using the `.js` extension for JSM](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-02)
+1. [The simplest Node.js ESM project](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-01)
+2. [Using the `.js` extension for ESM](../using-jsm-esm-in-nodejs-a-practical-guide-part-1/#section-02)
 
 - Part 2 (this document): "exports" and its uses (including dual-mode libraries)
 
@@ -72,7 +72,7 @@ The entry point to the package, which is the file that loads when your `import` 
 a package, is `src/main.js` (just like in the previous parts of the guide), and is usually
 defined by the field `main`.
 
-While you can use `main` to define the entry point, the correct JSM way to define the package
+While you can use `main` to define the entry point, the correct ESM way to define the package
 entry point is a new field: `exports`. Note that in `exports`, the path MUST start with a "`.`".
 This makes sense, as it is the same path you would use to `import` the file. If you're using
 `main`, you don't need the "`.`", but the exports field mandates it.
@@ -95,7 +95,7 @@ But wouldn't be able to do this (they'll get an error)
 import {banner} from "01-simplest-mjs/src/main.mjs"
 ```
 
-An interesting thing to note about `exports`, is that this is actually not a JSM feature.
+An interesting thing to note about `exports`, is that this is actually not a ESM feature.
 It is a Node.js feature and is also available for CJS! So `exports` works in CJS packages,
 and if `exports` is defined in a CJS package, then no deep linking is allowed in CJS too.
 
@@ -166,7 +166,7 @@ and the "package.json" one (`04-multiple-exports/package.json`).
 This is a nice way to define multiple entry points to a package, and as we've already seen,
 still "hides" the other implementation modules from the outside.
 
-Let's see how we test this using the "self-referencing" feature of JSM:
+Let's see how we test this using the "self-referencing" feature of ESM:
 
 ### Self-referencing the multiple entry points
 
@@ -191,18 +191,18 @@ are able to test the module entry points.
 
 Companion code: <https://github.com/giltayar/jsm-in-nodejs-guide/tree/main/05-dual-mode-library>
 
-Up to now, we created JSM code that was exported as a JSM package. So if another JSM
+Up to now, we created ESM code that was exported as a ESM package. So if another ESM
 package "`npm install`"-ed this one, then it could use it without a problem (using "`import`").
 But if a CJS package "`npm install`"-ed it, it would be difficult to use, because we are not allowed
-to "`require`" a JSM package, and the only way to use it would be using "`await import(...)`",
+to "`require`" a ESM package, and the only way to use it would be using "`await import(...)`",
 which is problematic because it is an async operation, which can only be used in an async function.
 
 Why does this limitation exist? Because CJS is a synchronous module system,
-and JSM is asyncronous, the only way to import JSM from CJS is using an asynchronous operation,
+and ESM is asyncronous, the only way to import ESM from CJS is using an asynchronous operation,
 "`await import(...)`".
 
 But what if we could create a module that can be both `import`-ed and `require`-ed? If it is
-"`import`"-ed, it uses JSM code, and if it is "`require`"-ed, it uses CJS code.
+"`import`"-ed, it uses ESM code, and if it is "`require`"-ed, it uses CJS code.
 
 We can! And again, we use the incredible `exports` field, and its ability to do
 "conditional exports". Let's look at the `package.json` of this package.
@@ -231,23 +231,23 @@ you're `require`-ing the package, Node.js uses `./lib/main.cjs`, and when you're
 it, Node.js uses `./src/main.js`.
 
 Perfect for our needs! We just point the two entry points to different implementations: one
-written for JSM and one for CJS.
+written for ESM and one for CJS.
 
 Just one small detail... Are we now going to write two implementations of our package, one for
-CJS (using `require` everywhere) and one for JSM (using `import` everywhere)? That's asking
+CJS (using `require` everywhere) and one for ESM (using `import` everywhere)? That's asking
 a bit too much, I think.
 
 One simple way out of this conundrum, is to write the package using CJS, and then write
-a small JSM wrapper that "`require`"-s the code end "`export`"-s it as JSM.
+a small ESM wrapper that "`require`"-s the code end "`export`"-s it as ESM.
 That's a great solution, and works well for existing packages that are
-CJS: they can wrap their code with a JSM wrapper, define the conditions like above, and voila:
-they're dual-mode! But if we're using JSM, this is not an option for us.
-So is there a way to continue writing JSM code, and yet still have a parallel CJS entry point?
+CJS: they can wrap their code with a ESM wrapper, define the conditions like above, and voila:
+they're dual-mode! But if we're using ESM, this is not an option for us.
+So is there a way to continue writing ESM code, and yet still have a parallel CJS entry point?
 
 Yes, there is. We do what our ancestors did: we transpile. 😎 For this,
 I'm going to use [Rollup](https://rollupjs.org/). Rollup is great because it understands
-JSM, understands CJS, and can convert from one to another, so we don't have to do a lot
-to get Rollup to take all our code and just transpile it from JSM to CJS.
+ESM, understands CJS, and can convert from one to another, so we don't have to do a lot
+to get Rollup to take all our code and just transpile it from ESM to CJS.
 
 ### Dev Dependencies needed for transpiling
 
@@ -267,7 +267,7 @@ Code: <https://github.com/giltayar/jsm-in-nodejs-guide/blob/main/05-dual-mode-li
 
 Now let's see how we configure Rollup to transpile our code.
 
-### Transpiling JSM to CJS using Rollup
+### Transpiling ESM to CJS using Rollup
 
 Remember, the code is in `src/*.js` and we want to transpile to CJS code in `lib/*.js`.
 
@@ -291,7 +291,7 @@ export default {
 ```
 
 > **Gotcha**: theoretically, we should be able to name the rollup config file `rollup.config.js`,
-  because it uses JSM. but Rollup assumes that `.js` is CJS,
+  because it uses ESM. but Rollup assumes that `.js` is CJS,
   and so forces us to name the file `rollup.config.mjs`.
 
 Let's deconstruct this code. First, the `input`, which is the list of `.js` files
@@ -300,7 +300,7 @@ in `src`.
 Now for the output: The output `dir` is `lib`, and we want to format it as `cjs`. This makes sense.
 
 But why do we want the output filenames to end with `.cjs`? Because if we ended them with `.js`,
-they will be treated as JSM files. So we use the `.cjs` extension to force Node.js to treat
+they will be treated as ESM files. So we use the `.cjs` extension to force Node.js to treat
 them as CJS files.
 
 And what is that `preserveModules: true`? This forcs Rollup to create a module for each module
@@ -345,6 +345,6 @@ const {banner} = require('05-dual-mode-library')
 
 Each one will find the correct entry point using the conditional export, and all will be well.
 
-OK, cool. We're done with the basics of JSM in Node.js. Now for the tooling: using things
+OK, cool. We're done with the basics of ESM in Node.js. Now for the tooling: using things
 like ESLint, test runners, and mocks. You can find that in the next
 part, [here](../using-jsm-esm-in-nodejs-a-practical-guide-part-3/).
